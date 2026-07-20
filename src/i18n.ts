@@ -1,0 +1,57 @@
+export type Lang = 'en' | 'hi' | 'mr';
+
+type TranslationMap = Record<string, Record<Lang, string>>;
+
+export const t: TranslationMap = {
+  appName: { en: 'Panchang', hi: '\u092a\u0902\u091a\u093e\u0902\u0917', mr: '\u092a\u0902\u091a\u093e\u0902\u0917' },
+  panchang: { en: 'Panchang', hi: '\u092a\u0902\u091a\u093e\u0902\u0917', mr: '\u092a\u0902\u091a\u093e\u0902\u0917' },
+  muhurta: { en: 'Muhurta', hi: '\u092e\u0941\u0939\u0942\u0930\u094d\u0924', mr: '\u092e\u0941\u0939\u0942\u0930\u094d\u0924' },
+  graha: { en: 'Graha', hi: '\u0917\u094d\u0930\u0939', mr: '\u0917\u094d\u0930\u0939' },
+  transits: { en: 'Transits', hi: '\u0917\u094b\u091a\u0930', mr: '\u0917\u094b\u091a\u0930' },
+  settings: { en: 'Settings', hi: '\u0938\u0947\u091f\u093f\u0902\u0917\u094d\u0938', mr: '\u0938\u0947\u091f\u093f\u0902\u0917\u094d\u0938' },
+  date: { en: 'Date', hi: '\u0924\u093e\u0930\u0940\u0916', mr: '\u0924\u093e\u0930\u0940\u0916' },
+  location: { en: 'Location', hi: '\u0938\u094d\u0925\u093e\u0928', mr: '\u0938\u094d\u0925\u093e\u0928' },
+  language: { en: 'Language', hi: '\u092d\u093e\u0937\u093e', mr: '\u092d\u093e\u0937\u093e' },
+  useMyLocation: { en: 'Use My Location', hi: '\u092e\u0947\u0930\u093e \u0938\u094d\u0925\u093e\u0928 \u0909\u092a\u092f\u094b\u0917 \u0915\u0930\u0947\u0902', mr: '\u092e\u093e\u091d\u0947 \u0938\u094d\u0925\u093e\u0928 \u0935\u093e\u092a\u0930\u093e' },
+  savedLocation: { en: 'Saved Location', hi: '\u0938\u0939\u0947\u091c\u093e \u0938\u094d\u0925\u093e\u0928', mr: '\u091c\u0924\u0932\u0947\u0932\u0947 \u0938\u094d\u0925\u093e\u0928' },
+  sunrise: { en: 'Sunrise', hi: '\u0938\u0942\u0930\u094d\u092f\u094b\u0926\u092f', mr: '\u0938\u0942\u0930\u094d\u092f\u094b\u0926\u092f' },
+  sunset: { en: 'Sunset', hi: '\u0938\u0942\u0930\u094d\u092f\u093e\u0938\u094d\u0924', mr: '\u0938\u0942\u0930\u094d\u092f\u093e\u0938\u094d\u0924' },
+  moonrise: { en: 'Moonrise', hi: '\u091a\u0928\u094d\u0926\u094d\u0930\u094b\u0926\u092f', mr: '\u091a\u0928\u094d\u0926\u094d\u0930\u094b\u0926\u092f' },
+  moonset: { en: 'Moonset', hi: '\u091a\u0928\u094d\u0926\u094d\u0930\u093e\u0938\u094d\u0924', mr: '\u091a\u0928\u094d\u0926\u094d\u0930\u093e\u0938\u094d\u0924' },
+  tithi: { en: 'Tithi', hi: '\u0924\u093f\u0925\u093f', mr: '\u0924\u093f\u0925\u0940' },
+  nakshatra: { en: 'Nakshatra', hi: '\u0928\u0915\u094d\u0937\u0924\u094d\u0930', mr: '\u0928\u0915\u094d\u0937\u0924\u094d\u0930' },
+  yoga: { en: 'Yoga', hi: '\u092f\u094b\u0917', mr: '\u092f\u094b\u0917' },
+  karana: { en: 'Karana', hi: '\u0915\u0930\u0923', mr: '\u0915\u0930\u0923' },
+  masa: { en: 'Masa', hi: '\u092e\u093e\u0938', mr: '\u092e\u093e\u0938' },
+  ritu: { en: 'Ritu', hi: '\u090b\u0924\u0941', mr: '\u090b\u0924\u0942' },
+  ayana: { en: 'Ayana', hi: '\u0905\u092f\u0928', mr: '\u0905\u092f\u0928' },
+  vara: { en: 'Vara', hi: '\u0935\u093e\u0930', mr: '\u0935\u093e\u0930' },
+  rahuKalam: { en: 'Rahu Kalam', hi: '\u0930\u093e\u0939\u0941 \u0915\u093e\u0932', mr: '\u0930\u093e\u0939\u0941 \u0915\u093e\u0933' },
+  yamaganda: { en: 'Yamaganda', hi: '\u092f\u092e\u0917\u0902\u0921', mr: '\u092f\u092e\u0917\u0902\u0921' },
+  gulikaKalam: { en: 'Gulika Kalam', hi: '\u0917\u0941\u0932\u093f\u0915\u093e \u0915\u093e\u0932', mr: '\u0917\u0941\u0932\u093f\u0915\u093e \u0915\u093e\u0933' },
+  abhijitMuhurta: { en: 'Abhijit Muhurta', hi: '\u0905\u092d\u093f\u091c\u0940\u0924 \u092e\u0941\u0939\u0942\u0930\u094d\u0924', mr: '\u0905\u092d\u093f\u091c\u0940\u0924 \u092e\u0941\u0939\u0942\u0930\u094d\u0924' },
+  brahmaMuhurta: { en: 'Brahma Muhurta', hi: '\u092c\u094d\u0930\u0939\u094d\u092e \u092e\u0941\u0939\u0942\u0930\u094d\u0924', mr: '\u092c\u094d\u0930\u0939\u094d\u092e \u092e\u0941\u0939\u0942\u0930\u094d\u0924' },
+  moonRashi: { en: 'Moon Rashi', hi: '\u091a\u0928\u094d\u0926\u094d\u0930 \u0930\u093e\u0936\u093f', mr: '\u091a\u0902\u0926\u094d\u0930 \u0930\u093e\u0936\u0940' },
+  sunRashi: { en: 'Sun Rashi', hi: '\u0938\u0942\u0930\u094d\u092f \u0930\u093e\u0936\u093f', mr: '\u0938\u0942\u0930\u094d\u092f \u0930\u093e\u0936\u0940' },
+  udayaLagna: { en: 'Udaya Lagna', hi: '\u0909\u0926\u092f \u0932\u0917\u094d\u0928', mr: '\u0909\u0926\u092f \u0932\u0917\u094d\u0928' },
+  festivals: { en: 'Festivals', hi: '\u0924\u094d\u092f\u094b\u0939\u093e\u0930', mr: '\u0938\u0928\u094d\u0926\u0930\u094d\u092d' },
+  specialYogas: { en: 'Special Yogas', hi: '\u0935\u093f\u0936\u0947\u0937 \u092f\u094b\u0917', mr: '\u0935\u093f\u0936\u0947\u0937 \u092f\u094b\u0917' },
+  choghadiya: { en: 'Choghadiya', hi: '\u091a\u094b\u0918\u0921\u093c\u093f\u092f\u093e', mr: '\u091a\u094b\u0918\u0921\u093f\u092f\u093e' },
+  gowri: { en: 'Gowri', hi: '\u0917\u094c\u0930\u0940', mr: '\u0917\u094c\u0930\u0940' },
+  planets: { en: 'Planets', hi: '\u0917\u094d\u0930\u0939', mr: '\u0917\u094d\u0930\u0939' },
+  good: { en: 'Good', hi: '\u0936\u0941\u092d', mr: '\u0936\u0941\u092d' },
+  bad: { en: 'Bad', hi: '\u0905\u0936\u0941\u092d', mr: '\u0905\u0936\u0941\u092d' },
+  neutral: { en: 'Neutral', hi: '\u0938\u093e\u092e\u093e\u0928\u094d\u092f', mr: '\u0938\u093e\u092e\u093e\u0928\u094d\u092f' },
+  loading: { en: 'Loading...', hi: '\u0932\u094b\u0921 \u0939\u094b \u0930\u0939\u093e \u0939\u0948...', mr: '\u0932\u094b\u0921 \u0939\u094b\u0924 \u0906\u0939\u0947...' },
+  selectDate: { en: 'Select Date', hi: '\u0924\u093e\u0930\u0940\u0916 \u091a\u0941\u0928\u0947\u0902', mr: '\u0924\u093e\u0930\u0940\u0916 \u0928\u093f\u0935\u0921\u093e' },
+  offline: { en: 'You are offline', hi: '\u0906\u092a \u0911\u092b\u0932\u093e\u0907\u0928 \u0939\u0948\u0902', mr: '\u0924\u0941\u092e\u094d\u0939\u0940 \u0911\u092b\u0932\u093e\u0907\u0928 \u0906\u0939\u093e\u0924' },
+  today: { en: 'Today', hi: '\u0906\u091c', mr: '\u0906\u091c' },
+  yesterday: { en: 'Yesterday', hi: '\u0915\u0932', mr: '\u0915\u093e\u0932' },
+  tomorrow: { en: 'Tomorrow', hi: '\u0915\u0932', mr: '\u0909\u0926\u094d\u092f\u093e' },
+  noTransits: { en: 'No transit data available', hi: '\u0915\u094b\u0908 \u0917\u094b\u091a\u0930 \u0921\u0947\u091f\u093e \u0909\u092a\u0932\u092c\u094d\u0927 \u0928\u0939\u0940\u0902', mr: '\u0917\u094b\u091a\u0930 \u092e\u093e\u0939\u093f\u0924\u0940 \u0909\u092a\u0932\u092c\u094d\u0927 \u0928\u093e\u0939\u0940' },
+};
+
+export function useI18n(lang: Lang) {
+  const tr = (key: string) => t[key]?.[lang] ?? key;
+  return { lang, tr };
+}

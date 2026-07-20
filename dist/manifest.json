@@ -1,0 +1,28 @@
+{
+  "name": "Panchang Astrochitra",
+  "short_name": "Panchang",
+  "description": "Daily Vedic Panchang – Tithi, Nakshatra, Muhurta, Graha positions & planetary transits",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5e6c8",
+  "theme_color": "#654e12",
+  "orientation": "portrait-primary",
+  "categories": ["lifestyle", "education"],
+  "lang": "en-IN",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
+}

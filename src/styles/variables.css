@@ -1,0 +1,36 @@
+:root {
+  --ac-olive: #654e12;
+  --ac-olive-dark: #4a3a0e;
+  --ac-olive-light: #8b7a3a;
+  --ac-terracotta: #8b4513;
+  --ac-gold: #c9a227;
+  --ac-saffron: #ff6600;
+  --ac-saffron-dark: #e55500;
+  --ac-bg: #f5e6c8;
+  --ac-paper: #f5e6c8;
+  --ac-paper-light: #fff8e7;
+  --ac-card-bg: rgba(255, 248, 231, 0.85);
+  --ac-card-border: rgba(184, 134, 11, 0.25);
+  --ac-text-primary: #654e12;
+  --ac-text-secondary: #5d4037;
+  --ac-text-light: #8b6f47;
+  --ac-text-muted: #a08060;
+  --ac-danger: #c41e3a;
+  --ac-success: #228B22;
+  --ac-warning: #B8860B;
+
+  --ac-radius-sm: 8px;
+  --ac-radius-md: 12px;
+  --ac-radius-lg: 16px;
+  --ac-radius-xl: 24px;
+
+  --ac-shadow-sm: 0 1px 3px rgba(101, 78, 18, 0.08);
+  --ac-shadow-md: 0 4px 12px rgba(101, 78, 18, 0.1);
+  --ac-shadow-lg: 0 8px 24px rgba(101, 78, 18, 0.12);
+
+  --ac-bottom-nav-height: 72px;
+  --ac-header-height: 56px;
+
+  --font-saira: 'Saira', sans-serif;
+  --font-astrochitra: 'AstroChitra', serif;
+}
