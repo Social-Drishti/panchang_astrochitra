@@ -208,8 +208,8 @@ export interface PanchangData {
   brahmaMuhurta: string;
   festivals: string[];
   specialYogas: string[];
-  choghadiya?: Record<string, string>;
-  gowri?: Record<string, string>;
+  choghadiya?: { day: ChoghadiyaItem[]; night: ChoghadiyaItem[] };
+  gowri?: { day: GowriItem[]; night: GowriItem[] };
   planetPositions: PlanetPositions;
 }
 
@@ -225,18 +225,6 @@ export function getPanchang(date: Date, lat: number, lon: number): PanchangData 
     const key = p.name.charAt(0).toUpperCase() + p.name.slice(1);
     planetPositions[key] = { sign: p.rashi.index, degree: p.degrees };
   });
-
-  const choghadiya: Record<string, string> = {};
-  if (raw.choghadiya) {
-    raw.choghadiya.day.forEach(c => { choghadiya[c.name] = c.rating; });
-    raw.choghadiya.night.forEach(c => { choghadiya[c.name] = c.rating; });
-  }
-
-  const gowri: Record<string, string> = {};
-  if (raw.gowri) {
-    raw.gowri.day.forEach(g => { gowri[g.name] = g.rating; });
-    raw.gowri.night.forEach(g => { gowri[g.name] = g.rating; });
-  }
 
   return {
     sunrise: raw.times.sunrise ?? '',
@@ -261,8 +249,8 @@ export function getPanchang(date: Date, lat: number, lon: number): PanchangData 
     brahmaMuhurta: fmt(raw.auspicious.brahmaMuhurta),
     festivals: raw.festivals.map((f: any) => typeof f === 'string' ? f : f.name ?? ''),
     specialYogas: raw.specialYogas.map((y: any) => typeof y === 'string' ? y : y.name ?? ''),
-    choghadiya,
-    gowri,
+    choghadiya: raw.choghadiya ?? undefined,
+    gowri: raw.gowri ?? undefined,
     planetPositions,
   };
 }

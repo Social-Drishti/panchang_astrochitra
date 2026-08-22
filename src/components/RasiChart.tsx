@@ -22,6 +22,7 @@ interface RasiChartProps {
   showHeader?: boolean;
   transitMode?: TransitMode;
   size?: number;
+  planetDisplay?: 'icons' | 'initials';
 }
 
 const ENGLISH_SIGNS = [
@@ -107,6 +108,7 @@ export default function RasiChart({
   showHeader = true,
   transitMode,
   size = 300,
+  planetDisplay = 'icons',
 }: RasiChartProps) {
   const houseData = useMemo(() => {
     if (externalHouseData) return externalHouseData;
@@ -299,8 +301,9 @@ export default function RasiChart({
                     const offX = col * planetSpacing - totalW / 2;
                     const pY = planetsBaseY + row * planetLH;
                     const isHL = highlightPlanet && planet.key.toLowerCase() === highlightPlanet.toLowerCase();
+                    const showIcon = planetDisplay === 'icons' && !!PLANET_ICONS[planet.key];
 
-                    if (PLANET_ICONS[planet.key]) {
+                    if (showIcon) {
                       return (
                         <g key={planet.key}>
                           {isHL && (

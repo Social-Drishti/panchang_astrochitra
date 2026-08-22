@@ -42,6 +42,22 @@ export default function PanchangPage() {
     </div>
   );
 
+  const TimingRow = ({ name, rating, start, end, isLast }: { name: string; rating: string; start: string | null; end: string | null; isLast: boolean }) => (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', padding: '6px 0', borderBottom: isLast ? 'none' : '1px solid var(--border)' }}>
+      <span style={{ fontWeight: 500, fontSize: '14px' }}>{name}</span>
+      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <span className={`chip chip-${rating}`}>{tr(rating)}</span>
+        {start && end && (
+          <span style={{ fontSize: '13px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{start} - {end}</span>
+        )}
+      </span>
+    </div>
+  );
+
+  const SubLabel = ({ children }: { children: string }) => (
+    <div style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '4px 0 2px' }}>{children}</div>
+  );
+
   return (
     <div className="scroll-area" style={{ padding: '16px' }}>
       {/* Date Nav */}
@@ -98,6 +114,52 @@ export default function PanchangPage() {
           <Item label={tr('brahmaMuhurta')} value={data.brahmaMuhurta} />
         </div>
       </div>
+
+      {/* Choghadiya timings */}
+      {((data.choghadiya?.day?.length ?? 0) > 0 || (data.choghadiya?.night?.length ?? 0) > 0) && (
+        <div className="card">
+          <div className="card-title">{tr('choghadiya')}</div>
+          {(data.choghadiya?.day?.length ?? 0) > 0 && (
+            <>
+              <SubLabel>{tr('day')}</SubLabel>
+              {data.choghadiya!.day.map((c, i) => (
+                <TimingRow key={`cd-${i}`} name={c.name} rating={c.rating} start={c.start} end={c.end} isLast={i === data.choghadiya!.day.length - 1 && (data.choghadiya!.night?.length ?? 0) === 0} />
+              ))}
+            </>
+          )}
+          {(data.choghadiya?.night?.length ?? 0) > 0 && (
+            <>
+              <SubLabel>{tr('night')}</SubLabel>
+              {data.choghadiya!.night.map((c, i) => (
+                <TimingRow key={`cn-${i}`} name={c.name} rating={c.rating} start={c.start} end={c.end} isLast={i === data.choghadiya!.night.length - 1} />
+              ))}
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Gowri timings */}
+      {((data.gowri?.day?.length ?? 0) > 0 || (data.gowri?.night?.length ?? 0) > 0) && (
+        <div className="card">
+          <div className="card-title">{tr('gowri')}</div>
+          {(data.gowri?.day?.length ?? 0) > 0 && (
+            <>
+              <SubLabel>{tr('day')}</SubLabel>
+              {data.gowri!.day.map((g, i) => (
+                <TimingRow key={`gd-${i}`} name={g.name} rating={g.rating} start={g.start} end={g.end} isLast={i === data.gowri!.day.length - 1 && (data.gowri!.night?.length ?? 0) === 0} />
+              ))}
+            </>
+          )}
+          {(data.gowri?.night?.length ?? 0) > 0 && (
+            <>
+              <SubLabel>{tr('night')}</SubLabel>
+              {data.gowri!.night.map((g, i) => (
+                <TimingRow key={`gn-${i}`} name={g.name} rating={g.rating} start={g.start} end={g.end} isLast={i === data.gowri!.night.length - 1} />
+              ))}
+            </>
+          )}
+        </div>
+      )}
 
       {/* Festivals & Special Yogas */}
       {data.festivals.length > 0 && (

@@ -2,7 +2,13 @@ import { useState, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { useI18n } from '../i18n';
 import { getPanchang, type PanchangData } from '../lib/panchang';
+import {
+  computeUpcomingIngresses,
+  computeIngressesBetween,
+} from '../lib/transits';
+import { formatTime } from '../lib/constants';
 import RasiChart from '../components/RasiChart';
+import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
 
 const PLANET_ICONS: Record<string, string> = {
   Sun: '/astro_icons/planets/Sun.svg', Moon: '/astro_icons/planets/Moon.svg',
@@ -17,19 +23,15 @@ const SIGN_NAMES = [
   'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
 ];
 
-// Average days per sign for each planet
-const PLANET_SPEED_DAYS: Record<string, number> = {
-  Sun: 30.44, Moon: 2.3, Mars: 45, Mercury: 24, Jupiter: 365,
-  Venus: 25, Saturn: 730, Rahu: 540, Ketu: 540,
-};
-
 interface TransitEvent {
   planet: string;
   fromSign: number;
   fromSignName: string;
   toSign: number;
   toSignName: string;
+  ingressTime: Date;
   transitDate: string;
+  transitTime: string | null;
   daysAway: number;
 }
 
@@ -39,62 +41,102 @@ function formatDateStr(d: Date): string {
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
+function formatShortDate(d: Date): string {
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+}
+
+function startOfDayMs(d: Date): number {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+}
+
 function signToHouse(signIndex: number, ascendantSign: number): number {
   return ((signIndex - (ascendantSign - 1) + 12) % 12) + 1;
 }
 
 export default function TransitsPage() {
-  const { lang, location } = useApp();
+  const { lang, location, selectedDate } = useApp();
   const { tr } = useI18n(lang);
   const [data, setData] = useState<PanchangData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    const today = new Date();
-    const result = getPanchang(today, location.lat, location.lon);
+    const d = new Date(`${selectedDate}T00:00:00`);
+    const result = getPanchang(d, location.lat, location.lon);
     setData(result);
     setLoading(false);
-  }, [location]);
+  }, [selectedDate, location]);
 
   const transits = useMemo(() => {
     if (!data?.planetPositions) return [];
-    const events: TransitEvent[] = [];
-    const now = new Date();
+    const base = new Date(`${selectedDate}T00:00:00`);
 
-    Object.entries(data.planetPositions).forEach(([name, pos]) => {
-      if (!pos) return;
-      const fromSign = pos.sign;
-      const toSign = (pos.sign + 1) % 12;
-      const degInSign = pos.degree;
-      const degRemaining = 30 - degInSign;
-      const speedDays = PLANET_SPEED_DAYS[name] ?? 30;
-      const daysUntil = Math.round((degRemaining / 30) * speedDays);
+    const ingresses = computeUpcomingIngresses(base);
 
-      const transitDate = new Date(now);
-      transitDate.setDate(transitDate.getDate() + daysUntil);
+    const events: TransitEvent[] = ingresses.map(ingress => ({
+      planet: ingress.planet,
+      fromSign: ingress.fromSign,
+      fromSignName: SIGN_NAMES[ingress.fromSign] ?? '',
+      toSign: ingress.toSign,
+      toSignName: SIGN_NAMES[ingress.toSign] ?? '',
+      ingressTime: ingress.ingressTime,
+      transitDate: formatDateStr(ingress.ingressTime),
+      transitTime: formatTime(ingress.ingressTime),
+      daysAway: Math.round((startOfDayMs(ingress.ingressTime) - startOfDayMs(base)) / 86_400_000),
+    }));
 
-      events.push({
-        planet: name,
-        fromSign,
-        fromSignName: SIGN_NAMES[fromSign] ?? '',
-        toSign,
-        toSignName: SIGN_NAMES[toSign] ?? '',
-        transitDate: formatDateStr(transitDate),
-        daysAway: daysUntil,
-      });
-    });
-
-    events.sort((a, b) => a.daysAway - b.daysAway);
-
-    // Re-sort by planet order for same day
     events.sort((a, b) => {
-      if (a.daysAway !== b.daysAway) return a.daysAway - b.daysAway;
+      if (a.ingressTime.getTime() !== b.ingressTime.getTime()) {
+        return a.ingressTime.getTime() - b.ingressTime.getTime();
+      }
       return PLANET_ORDER.indexOf(a.planet) - PLANET_ORDER.indexOf(b.planet);
     });
 
     return events;
-  }, [data]);
+  }, [data, selectedDate]);
+
+  const selectedParts = useMemo(() => {
+    const [y, m] = selectedDate.split('-').map(Number);
+    return { year: y ?? new Date().getFullYear(), month: (m ?? 1) - 1 };
+  }, [selectedDate]);
+
+  const [viewMonth, setViewMonth] = useState(selectedParts);
+
+  const changeMonth = (delta: number) => {
+    setViewMonth(prev => {
+      const d = new Date(prev.year, prev.month + delta, 1);
+      return { year: d.getFullYear(), month: d.getMonth() };
+    });
+  };
+
+  const monthStart = useMemo(() => new Date(viewMonth.year, viewMonth.month, 1), [viewMonth]);
+  const monthEnd = useMemo(
+    () => new Date(viewMonth.year, viewMonth.month + 1, 1),
+    [viewMonth]
+  );
+
+  const monthTransits = useMemo(() => {
+    const events: TransitEvent[] = computeIngressesBetween(monthStart, monthEnd).map(ingress => ({
+      planet: ingress.planet,
+      fromSign: ingress.fromSign,
+      fromSignName: SIGN_NAMES[ingress.fromSign] ?? '',
+      toSign: ingress.toSign,
+      toSignName: SIGN_NAMES[ingress.toSign] ?? '',
+      ingressTime: ingress.ingressTime,
+      transitDate: formatDateStr(ingress.ingressTime),
+      transitTime: formatTime(ingress.ingressTime),
+      daysAway: Math.round((startOfDayMs(ingress.ingressTime) - startOfDayMs(new Date())) / 86_400_000),
+    }));
+    events.sort((a, b) => {
+      if (a.ingressTime.getTime() !== b.ingressTime.getTime()) {
+        return a.ingressTime.getTime() - b.ingressTime.getTime();
+      }
+      return PLANET_ORDER.indexOf(a.planet) - PLANET_ORDER.indexOf(b.planet);
+    });
+    return events;
+  }, [monthStart, monthEnd]);
+
+  const monthLabel = monthStart.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
 
   if (loading || !data) {
     return (
@@ -108,8 +150,37 @@ export default function TransitsPage() {
 
   const ascendantSign = (data.planetPositions?.Sun?.sign ?? 0) + 1;
 
+  const renderTransitRow = (transit: TransitEvent, isLast: boolean) => (
+    <div key={`${transit.planet}-${transit.ingressTime.getTime()}`} style={{
+      display: 'flex', alignItems: 'center', gap: '10px',
+      padding: '8px 0', borderBottom: isLast ? 'none' : '1px solid var(--border)',
+    }}>
+      <img
+        src={PLANET_ICONS[transit.planet] ?? ''}
+        alt={transit.planet}
+        width={26}
+        height={26}
+        style={{ flexShrink: 0 }}
+        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+      />
+      <div style={{ flex: 1 }}>
+        <div style={{ fontWeight: 600, fontSize: '13px' }}>{transit.planet}</div>
+        <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+          {transit.fromSignName} &rarr; {transit.toSignName}
+        </div>
+      </div>
+      <div style={{ textAlign: 'right', fontSize: '12px', color: 'var(--text-secondary)' }}>
+        <div>{formatShortDate(transit.ingressTime)}{transit.transitTime ? `, ${transit.transitTime}` : ''}</div>
+        {transit.daysAway === 0 && <div style={{ color: 'var(--gold)', fontWeight: 600 }}>{tr('today')}</div>}
+        {transit.daysAway === 1 && <div>{tr('tomorrow')}</div>}
+        {transit.daysAway > 1 && <div style={{ color: 'var(--text-muted)' }}>({transit.daysAway}d)</div>}
+      </div>
+    </div>
+  );
+
   return (
     <div className="scroll-area" style={{ padding: '16px' }}>
+      {/* Next ingress per planet */}
       {transits.length === 0 ? (
         <div className="card" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
           {tr('noTransits')}
@@ -157,7 +228,7 @@ export default function TransitsPage() {
               </div>
 
               <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px' }}>
-                <span>{transit.transitDate}</span>
+                <span>{transit.transitDate}{transit.transitTime ? `, ${transit.transitTime}` : ''}</span>
                 {transit.daysAway > 1 && <span>({transit.daysAway} days away)</span>}
               </div>
 
@@ -166,17 +237,49 @@ export default function TransitsPage() {
                 ascendantSign={ascendantSign}
                 showHeader={false}
                 highlightPlanet={transit.planet}
+                planetDisplay="initials"
                 transitMode={{
                   fromHouse,
                   toHouse,
                   transitDate: transit.transitDate,
                 }}
-                // size={220}
               />
             </div>
           );
         })
       )}
+
+      {/* Month-by-month transit browser */}
+      <div className="card" style={{ padding: '12px' }}>
+        <div className="card-title">{monthLabel}</div>
+        {monthTransits.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>
+            {tr('noTransits')}
+          </div>
+        ) : (
+          monthTransits.map((t, i) => renderTransitRow(t, i === monthTransits.length - 1))
+        )}
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '10px' }}>
+          <button
+            className="date-nav-btn"
+            onClick={() => changeMonth(-1)}
+            aria-label="Previous month"
+          >
+            <MdChevronLeft size={24} />
+          </button>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)' }}>
+            {monthLabel}
+          </span>
+          <button
+            className="date-nav-btn"
+            onClick={() => changeMonth(1)}
+            aria-label="Next month"
+          >
+            <MdChevronRight size={24} />
+          </button>
+        </div>
+      </div>
 
       <div style={{ height: '80px' }} />
     </div>
