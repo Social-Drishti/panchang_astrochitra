@@ -9,6 +9,7 @@ import PanchangPage from './pages/PanchangPage';
 import MuhurtaPage from './pages/MuhurtaPage';
 import GrahaPage from './pages/GrahaPage';
 import TransitsPage from './pages/TransitsPage';
+import PWAInstallManager from './components/PWAInstallManager';
 
 type Page = 'panchang' | 'muhurta' | 'graha' | 'transits';
 
@@ -116,6 +117,8 @@ function AppShell() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <PWAInstallManager />
 
       {!isOnline && (
         <div className="offline-badge">
