@@ -9,7 +9,7 @@ export function isAndroid(): boolean {
 
 export function isStandalone(): boolean {
   return window.matchMedia('(display-mode: standalone)').matches ||
-    (window.navigator as Record<string, unknown>).standalone === true;
+    (window.navigator as unknown as { standalone?: boolean }).standalone === true;
 }
 
 export function canInstall(): boolean {
