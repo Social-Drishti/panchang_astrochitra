@@ -2,22 +2,24 @@ import { useState, useEffect } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { useI18n, type Lang } from './i18n';
 import { AnimatePresence, motion } from 'framer-motion';
-import { MdHome, MdAccessTime, MdStar, MdTrendingUp, MdMenu, MdLanguage, MdMyLocation, MdLocationOn } from 'react-icons/md';
+import { MdHome, MdAccessTime, MdStar, MdTrendingUp, MdMenu, MdLanguage, MdMyLocation, MdLocationOn, MdAccountBalance } from 'react-icons/md';
 import { locations } from './lib/locations';
 
 import PanchangPage from './pages/PanchangPage';
 import MuhurtaPage from './pages/MuhurtaPage';
 import GrahaPage from './pages/GrahaPage';
 import TransitsPage from './pages/TransitsPage';
+import KundliPage from './pages/KundliPage';
 import PWAInstallManager from './components/PWAInstallManager';
 
-type Page = 'panchang' | 'muhurta' | 'graha' | 'transits';
+type Page = 'panchang' | 'muhurta' | 'graha' | 'transits' | 'kundli';
 
 const NAV_ITEMS: { key: Page; labelEn: string; icon: React.ReactNode }[] = [
   { key: 'panchang', labelEn: 'Panchang', icon: <MdHome /> },
   { key: 'muhurta', labelEn: 'Muhurta', icon: <MdAccessTime /> },
   { key: 'graha', labelEn: 'Graha', icon: <MdStar /> },
   { key: 'transits', labelEn: 'Transits', icon: <MdTrendingUp /> },
+  { key: 'kundli', labelEn: 'Kundli', icon: <MdAccountBalance /> },
 ];
 
 function LocationBar() {
@@ -83,6 +85,7 @@ function AppShell() {
       case 'muhurta': return <MuhurtaPage />;
       case 'graha': return <GrahaPage />;
       case 'transits': return <TransitsPage />;
+      case 'kundli': return <KundliPage />;
     }
   };
 
@@ -92,6 +95,7 @@ function AppShell() {
       muhurta: tr('muhurta'),
       graha: tr('graha'),
       transits: tr('transits'),
+      kundli: tr('kundli'),
     };
     return map[key] ?? key;
   };

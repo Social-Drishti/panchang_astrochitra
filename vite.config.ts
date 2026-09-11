@@ -58,4 +58,15 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    proxy: {
+      // ExperientialLabs blocks browser CORS. Route it through the Vite dev
+      // server in dev; the provider falls back to a server-side proxy in prod.
+      '/api/explabs': {
+        target: 'https://api.experientiallabs.ai',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/explabs/, ''),
+      },
+    },
+  },
 });

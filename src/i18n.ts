@@ -52,6 +52,16 @@ export const t: TranslationMap = {
   yesterday: { en: 'Yesterday', hi: '\u0915\u0932', mr: '\u0915\u093e\u0932' },
   tomorrow: { en: 'Tomorrow', hi: '\u0915\u0932', mr: '\u0909\u0926\u094d\u092f\u093e' },
   noTransits: { en: 'No transit data available', hi: '\u0915\u094b\u0908 \u0917\u094b\u091a\u0930 \u0921\u0947\u091f\u093e \u0909\u092a\u0932\u092c\u094d\u0927 \u0928\u0939\u0940\u0902', mr: '\u0917\u094b\u091a\u0930 \u092e\u093e\u0939\u093f\u0924\u0940 \u0909\u092a\u0932\u092c\u094d\u0927 \u0928\u093e\u0939\u0940' },
+  kundli: { en: 'Kundli', hi: '\u0915\u0941\u0902\u0921\u0932\u0940', mr: '\u0915\u0941\u0902\u0921\u0933\u0940' },
+  birthDetails: { en: 'Birth Details', hi: '\u091c\u0928\u094d\u092e \u0935\u093f\u0935\u0930\u0923', mr: '\u091c\u094d\u0928\u094d\u092e \u0924\u092a\u0936\u0940\u0932' },
+  name: { en: 'Name', hi: '\u0928\u093e\u092e', mr: '\u0928\u093e\u0935' },
+  dateOfBirth: { en: 'Date of Birth', hi: '\u091c\u0928\u094d\u092e \u0924\u093f\u0925\u093f', mr: '\u091c\u0928\u094d\u092e \u0924\u093e\u0930\u0940\u0916' },
+  timeOfBirth: { en: 'Time of Birth', hi: '\u091c\u0928\u094d\u092e \u0938\u092e\u092f', mr: '\u091c\u0928\u094d\u092e \u0935\u0947\u0933' },
+  timezone: { en: 'Timezone', hi: '\u0938\u092e\u092f \u0915\u094d\u0937\u0947\u0924\u094d\u0930', mr: '\u0935\u0947\u0933 \u0915\u094d\u0937\u0947\u0924\u094d\u0930' },
+  generateKundli: { en: 'Generate Kundli', hi: '\u0915\u0941\u0902\u0921\u0932\u0940 \u092c\u0928\u093e\u090f\u0902', mr: '\u0915\u0941\u0902\u0921\u0933\u0940 \u092c\u0928\u0935\u093e' },
+  houses: { en: 'Houses', hi: '\u092d\u093e\u0935', mr: '\u092d\u093e\u0935' },
+  rashiLords: { en: 'Rashi Lords', hi: '\u0930\u093e\u0936\u093f \u0938\u094d\u0935\u093e\u092e\u0940', mr: '\u0930\u093e\u0936\u0940 \u0938\u094d\u0935\u093e\u092e\u0940' },
+  ascendant: { en: 'Ascendant (Lagna)', hi: '\u0932\u0917\u094d\u0928', mr: '\u0932\u0917\u094d\u0928' },
 };
 
 export function useI18n(lang: Lang) {
