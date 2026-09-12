@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { useI18n } from '../i18n';
 import { generateKundli, type KundliData, type BirthDetails } from '../lib/kundli';
@@ -14,6 +14,7 @@ import {
 } from '../lib/kundliStorage';
 import KundliView from '../components/KundliView';
 import PlaceSearch from '../components/PlaceSearch';
+import BirthDateTimeFields from '../components/BirthDateTimeFields';
 import { MdNoteAdd, MdFolder, MdDelete, MdArrowBack, MdClose } from 'react-icons/md';
 
 const TIMEZONES = [
@@ -49,13 +50,32 @@ export default function KundliPage({ onClose }: KundliPageProps) {
 
   // New-kundli form state
   const [name, setName] = useState('');
-  const [date, setDate] = useState(() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  });
-  const [time, setTime] = useState('12:00');
+  const [dob, setDob] = useState({ d: '', m: '', y: '' });
+  const [tob, setTob] = useState({ h: '', min: '' });
+  const [ampm, setAmpm] = useState<'AM' | 'PM'>('AM');
   const [timezone, setTimezone] = useState(5.5);
   const [place, setPlace] = useState<GeoResult | null>(DEFAULT_PLACE);
+
+  const pad2 = (n: number) => String(n).padStart(2, '0');
+
+  const date = useMemo(() => {
+    const d = Number(dob.d);
+    const m = Number(dob.m);
+    const y = Number(dob.y);
+    if (!dob.d || !dob.m || !dob.y || !d || !m || !y || !Number.isInteger(y) || y < 1000) return '';
+    const dt = new Date(y, m - 1, d);
+    if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d) return '';
+    return `${y}-${pad2(m)}-${pad2(d)}`;
+  }, [dob]);
+
+  const time = useMemo(() => {
+    const h = Number(tob.h);
+    const min = Number(tob.min);
+    if (!tob.h || !tob.min || h < 1 || h > 12 || min < 0 || min > 59) return '';
+    let h24 = h % 12;
+    if (ampm === 'PM') h24 += 12;
+    return `${pad2(h24)}:${pad2(min)}`;
+  }, [tob, ampm]);
 
   // View state (independent per tab)
   const [newView, setNewView] = useState<KundliData | null>(null);   // generated result in New tab
@@ -67,6 +87,10 @@ export default function KundliPage({ onClose }: KundliPageProps) {
     setError(null);
     if (!place) {
       setError('Please select a place of birth');
+      return;
+    }
+    if (!date || !time) {
+      setError('Please enter a valid date and time of birth');
       return;
     }
     try {
@@ -126,22 +150,6 @@ export default function KundliPage({ onClose }: KundliPageProps) {
     if (newViewId === id) setNewViewId(null);
   };
 
-  const tabStyle = (active: boolean): React.CSSProperties => ({
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '6px',
-    padding: '10px 8px',
-    borderRadius: '10px',
-    fontSize: '14px',
-    fontWeight: 600,
-    color: active ? 'var(--olive)' : 'var(--text-secondary)',
-    background: active ? 'var(--gold-light)' : '#fff',
-    border: '1px solid var(--border)',
-    transition: 'all 0.15s ease',
-  });
-
   const L = {
     newKundli: 'New Kundli',
     savedKundlis: 'Saved Kundlis',
@@ -158,48 +166,20 @@ export default function KundliPage({ onClose }: KundliPageProps) {
   };
 
   const renderTabs = () => (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: '8px',
-      marginBottom: '12px',
-      position: 'sticky',
-      top: 0,
-      zIndex: 10,
-      padding: '4px 0 8px',
-      background: 'var(--bg)',
-    }}>
-      <div style={{ display: 'flex', gap: '8px' }}>
-        <button style={tabStyle(tab === 'new')} onClick={() => setTab('new')}>
+    <div className="k-tabs">
+      <div style={{ display: 'flex', gap: '8px', flex: 1, minWidth: 0 }}>
+        <button className={`k-tab${tab === 'new' ? ' active' : ''}`} onClick={() => setTab('new')}>
           <MdNoteAdd size={18} />
           <span>{L.newKundli}</span>
         </button>
-        <button style={tabStyle(tab === 'saved')} onClick={() => setTab('saved')}>
+        <button className={`k-tab${tab === 'saved' ? ' active' : ''}`} onClick={() => setTab('saved')}>
           <MdFolder size={18} />
           <span>{L.savedKundlis}</span>
-          {savedList.length > 0 && (
-            <span className="chip chip-gold" style={{ fontSize: '10px', padding: '1px 7px', borderRadius: '10px' }}>
-              {savedList.length}
-            </span>
-          )}
+          {savedList.length > 0 && <span className="k-tab-count">{savedList.length}</span>}
         </button>
       </div>
       {onClose && (
-        <button
-          onClick={onClose}
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--text-secondary)',
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-          }}
-        >
+        <button onClick={onClose} className="k-tab-close" aria-label="Close">
           <MdClose size={20} />
         </button>
       )}
@@ -208,22 +188,25 @@ export default function KundliPage({ onClose }: KundliPageProps) {
 
   const renderForm = () => (
     <div className="card">
-      <div className="card-title">Kundli &middot; {tr('panchang')}</div>
+      <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <MdNoteAdd size={20} color="var(--gold)" />
+        {L.newKundli}
+      </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <label style={{ fontSize: '12px', color: 'var(--card-text-3)' }}>{L.name}</label>
           <input value={name} onChange={e => setName(e.target.value)} placeholder="Enter name" style={{ borderRadius: '8px', padding: '10px 12px', background: '#fff' }} />
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label style={{ fontSize: '12px', color: 'var(--card-text-3)' }}>{L.dob}</label>
-            <input type="date" value={date} onChange={e => setDate(e.target.value)} style={{ borderRadius: '8px', padding: '10px 12px', background: '#fff' }} />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label style={{ fontSize: '12px', color: 'var(--card-text-3)' }}>{L.tob}</label>
-            <input type="time" value={time} onChange={e => setTime(e.target.value)} style={{ borderRadius: '8px', padding: '10px 12px', background: '#fff' }} />
-          </div>
-        </div>
+        <BirthDateTimeFields
+          dob={dob}
+          tob={tob}
+          ampm={ampm}
+          dateValue={date}
+          timeValue={time}
+          onDobChange={setDob}
+          onTobChange={setTob}
+          onAmpmChange={setAmpm}
+        />
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <label style={{ fontSize: '12px', color: 'var(--card-text-3)' }}>{L.tz}</label>
           <select value={timezone} onChange={e => setTimezone(parseFloat(e.target.value))} style={{ borderRadius: '8px', padding: '10px 12px', background: '#fff' }}>

@@ -161,7 +161,7 @@ function AppShell() {
         </header>
       )}
 
-      {page !== 'gochar' && page !== 'home' && <LocationBar />}
+      {page !== 'kundli' && page !== 'home' && <LocationBar />}
 
       <main className="main-content">
         {renderPage()}
