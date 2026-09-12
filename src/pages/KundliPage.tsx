@@ -14,7 +14,7 @@ import {
 } from '../lib/kundliStorage';
 import KundliView from '../components/KundliView';
 import PlaceSearch from '../components/PlaceSearch';
-import { MdNoteAdd, MdFolder, MdDelete, MdArrowBack } from 'react-icons/md';
+import { MdNoteAdd, MdFolder, MdDelete, MdArrowBack, MdClose } from 'react-icons/md';
 
 const TIMEZONES = [
   { label: 'IST (UTC+5:30)', value: 5.5 },
@@ -36,7 +36,11 @@ const DEFAULT_PLACE: GeoResult = {
 
 type Tab = 'new' | 'saved';
 
-export default function KundliPage() {
+interface KundliPageProps {
+  onClose?: () => void;
+}
+
+export default function KundliPage({ onClose }: KundliPageProps) {
   const { lang } = useApp();
   const { tr } = useI18n(lang);
 
@@ -156,6 +160,8 @@ export default function KundliPage() {
   const renderTabs = () => (
     <div style={{
       display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
       gap: '8px',
       marginBottom: '12px',
       position: 'sticky',
@@ -164,19 +170,39 @@ export default function KundliPage() {
       padding: '4px 0 8px',
       background: 'var(--bg)',
     }}>
-      <button style={tabStyle(tab === 'new')} onClick={() => setTab('new')}>
-        <MdNoteAdd size={18} />
-        <span>{L.newKundli}</span>
-      </button>
-      <button style={tabStyle(tab === 'saved')} onClick={() => setTab('saved')}>
-        <MdFolder size={18} />
-        <span>{L.savedKundlis}</span>
-        {savedList.length > 0 && (
-          <span className="chip chip-gold" style={{ fontSize: '10px', padding: '1px 7px', borderRadius: '10px' }}>
-            {savedList.length}
-          </span>
-        )}
-      </button>
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <button style={tabStyle(tab === 'new')} onClick={() => setTab('new')}>
+          <MdNoteAdd size={18} />
+          <span>{L.newKundli}</span>
+        </button>
+        <button style={tabStyle(tab === 'saved')} onClick={() => setTab('saved')}>
+          <MdFolder size={18} />
+          <span>{L.savedKundlis}</span>
+          {savedList.length > 0 && (
+            <span className="chip chip-gold" style={{ fontSize: '10px', padding: '1px 7px', borderRadius: '10px' }}>
+              {savedList.length}
+            </span>
+          )}
+        </button>
+      </div>
+      {onClose && (
+        <button
+          onClick={onClose}
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--text-secondary)',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+          }}
+        >
+          <MdClose size={20} />
+        </button>
+      )}
     </div>
   );
 
@@ -185,21 +211,21 @@ export default function KundliPage() {
       <div className="card-title">Kundli &middot; {tr('panchang')}</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <label style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{L.name}</label>
+          <label style={{ fontSize: '12px', color: 'var(--card-text-3)' }}>{L.name}</label>
           <input value={name} onChange={e => setName(e.target.value)} placeholder="Enter name" style={{ borderRadius: '8px', padding: '10px 12px', background: '#fff' }} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{L.dob}</label>
+            <label style={{ fontSize: '12px', color: 'var(--card-text-3)' }}>{L.dob}</label>
             <input type="date" value={date} onChange={e => setDate(e.target.value)} style={{ borderRadius: '8px', padding: '10px 12px', background: '#fff' }} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{L.tob}</label>
+            <label style={{ fontSize: '12px', color: 'var(--card-text-3)' }}>{L.tob}</label>
             <input type="time" value={time} onChange={e => setTime(e.target.value)} style={{ borderRadius: '8px', padding: '10px 12px', background: '#fff' }} />
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <label style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{L.tz}</label>
+          <label style={{ fontSize: '12px', color: 'var(--card-text-3)' }}>{L.tz}</label>
           <select value={timezone} onChange={e => setTimezone(parseFloat(e.target.value))} style={{ borderRadius: '8px', padding: '10px 12px', background: '#fff' }}>
             {TIMEZONES.map(tz => (
               <option key={tz.value} value={tz.value}>{tz.label}</option>
@@ -207,13 +233,13 @@ export default function KundliPage() {
           </select>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <label style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{L.place}</label>
+          <label style={{ fontSize: '12px', color: 'var(--card-text-3)' }}>{L.place}</label>
           <PlaceSearch value={place} onSelect={p => setPlace(p)} onClear={() => setPlace(null)} />
         </div>
         <button className="btn btn-primary" onClick={handleGenerate} style={{ width: '100%', marginTop: '4px', padding: '14px' }}>
           {L.generate}
         </button>
-        {error && <div style={{ color: 'var(--danger)', fontSize: '13px' }}>{error}</div>}
+        {error && <div style={{ color: '#ffb3b3', fontSize: '13px' }}>{error}</div>}
       </div>
     </div>
   );
@@ -222,8 +248,8 @@ export default function KundliPage() {
     if (savedList.length === 0) {
       return (
         <div className="card" style={{ textAlign: 'center', padding: '28px 16px' }}>
-          <MdFolder size={40} color="var(--text-muted)" style={{ marginBottom: '8px' }} />
-          <div style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: '1.5' }}>
+          <MdFolder size={40} color="var(--card-text-3)" style={{ marginBottom: '8px' }} />
+          <div style={{ color: 'var(--card-text-2)', fontSize: '13px', lineHeight: '1.5' }}>
             {L.empty}
           </div>
         </div>
@@ -231,7 +257,7 @@ export default function KundliPage() {
     }
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{L.savedListTitle} ({savedList.length})</div>
+        <div style={{ fontSize: '12px', color: 'var(--card-text-3)' }}>{L.savedListTitle} ({savedList.length})</div>
         {savedList.map(entry => {
           const k = entry.kundli;
           const savedId = entry.id;
@@ -239,8 +265,8 @@ export default function KundliPage() {
             <div key={entry.id} className="card" style={{ padding: '12px', marginBottom: 0 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
                 <button onClick={() => openSaved(entry)} style={{ flex: 1, textAlign: 'left' }}>
-                  <div style={{ fontWeight: 700, fontSize: '15px', color: 'var(--olive)' }}>{k.personName}</div>
-                  <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                  <div style={{ fontWeight: 700, fontSize: '15px', color: 'var(--card-gold)' }}>{k.personName}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--card-text-2)', marginTop: '2px' }}>
                     {k.localDateTime} · {k.placeName}
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
@@ -255,7 +281,7 @@ export default function KundliPage() {
                 </button>
                 <button
                   onClick={() => handleDelete(savedId)}
-                  style={{ color: 'var(--danger)', padding: '8px', flexShrink: 0, display: 'flex' }}
+                  style={{ color: '#ff8a80', padding: '8px', flexShrink: 0, display: 'flex' }}
                   aria-label="Delete"
                 >
                   <MdDelete size={22} />

@@ -131,7 +131,7 @@ export default function PlaceSearch({ value, placeholder, onSelect, onClear }: P
       )}
 
       {value && !open && (
-        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
+        <div style={{ fontSize: '11px', color: 'var(--card-text-3)', marginTop: '4px' }}>
           {value.lat.toFixed(4)}°, {value.lon.toFixed(4)}°
         </div>
       )}

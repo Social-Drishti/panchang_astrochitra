@@ -3,10 +3,10 @@ import { useApp } from '../context/AppContext';
 import { useI18n } from '../i18n';
 import { getPanchang, type PanchangData, type ChoghadiyaItem, type GowriItem } from '../lib/panchang';
 import { formatDate } from '../lib/constants';
-import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import { MdChevronLeft, MdChevronRight, MdAccessTime, MdWbSunny, MdNightlight } from 'react-icons/md';
 
 type MuhurtaItem = { name: string; start: string; end: string; type: 'good' | 'bad' | 'neutral' };
-type MuhurtaCategory = { label: string; items: MuhurtaItem[] };
+type MuhurtaCategory = { label: string; items: MuhurtaItem[]; icon?: React.ReactNode };
 
 function toMuhurtaItems(list: (ChoghadiyaItem | GowriItem)[]): MuhurtaItem[] {
   return list.map(c => ({
@@ -19,7 +19,7 @@ function toMuhurtaItems(list: (ChoghadiyaItem | GowriItem)[]): MuhurtaItem[] {
 
 export default function MuhurtaPage() {
   const { lang, location, selectedDate, setSelectedDate } = useApp();
-  const { tr, tr: t } = useI18n(lang);
+  const { tr } = useI18n(lang);
   const [data, setData] = useState<PanchangData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -50,6 +50,7 @@ export default function MuhurtaPage() {
   const categories: MuhurtaCategory[] = [
     {
       label: tr('rahuKalam'),
+      icon: <MdAccessTime size={20} color="var(--gold)" />,
       items: [
         { name: tr('rahuKalam'), start: data.rahuKalam.split(' - ')[0] || '', end: data.rahuKalam.split(' - ')[1] || '', type: 'bad' },
         { name: tr('yamaganda'), start: data.yamaganda.split(' - ')[0] || '', end: data.yamaganda.split(' - ')[1] || '', type: 'bad' },
@@ -58,6 +59,7 @@ export default function MuhurtaPage() {
     },
     {
       label: tr('abhijitMuhurta'),
+      icon: <MdWbSunny size={20} color="var(--gold)" />,
       items: [
         { name: tr('abhijitMuhurta'), start: data.abhijitMuhurta.split(' - ')[0] || '', end: data.abhijitMuhurta.split(' - ')[1] || '', type: 'good' },
         { name: tr('brahmaMuhurta'), start: data.brahmaMuhurta.split(' - ')[0] || '', end: data.brahmaMuhurta.split(' - ')[1] || '', type: 'good' },
@@ -71,15 +73,19 @@ export default function MuhurtaPage() {
   const gowriNight = toMuhurtaItems(data.gowri?.night ?? []);
 
   const renderRow = (item: MuhurtaItem, isLast: boolean) => (
-    <div key={item.name + item.start} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', padding: '6px 0', borderBottom: isLast ? 'none' : '1px solid var(--border)' }}>
+    <div key={item.name + item.start} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', padding: '8px 0', borderBottom: isLast ? 'none' : '1px solid var(--card-line)' }}>
       <span style={{ fontWeight: 500, fontSize: '14px' }}>{item.name}</span>
       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span className={`chip chip-${item.type}`}>{tr(item.type)}</span>
+        <span className={`chip chip-${item.type}`} style={{ fontSize: '11px' }}>{tr(item.type)}</span>
         {item.start && item.end && (
-          <span style={{ fontSize: '13px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{item.start} - {item.end}</span>
+          <span style={{ fontSize: '13px', color: 'var(--card-text-2)', whiteSpace: 'nowrap' }}>{item.start} - {item.end}</span>
         )}
       </span>
     </div>
+  );
+
+  const SubLabel = ({ children }: { children: string }) => (
+    <div style={{ fontSize: '11px', color: 'var(--card-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '8px 0 4px' }}>{children}</div>
   );
 
   return (
@@ -92,23 +98,29 @@ export default function MuhurtaPage() {
 
       {categories.filter(c => c.items.length > 0).map((cat, ci) => (
         <div key={ci} className="card">
-          <div className="card-title">{cat.label}</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {cat.icon}
+            {cat.label}
+          </div>
           {cat.items.map((item, ii) => renderRow(item, ii === cat.items.length - 1))}
         </div>
       ))}
 
       {(choghadiyaDay.length > 0 || choghadiyaNight.length > 0) && (
         <div className="card">
-          <div className="card-title">{tr('choghadiya')}</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <MdNightlight size={20} color="var(--gold)" />
+            {tr('choghadiya')}
+          </div>
           {choghadiyaDay.length > 0 && (
             <>
-              <div style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '4px 0 2px' }}>{tr('day')}</div>
+              <SubLabel>{tr('day')}</SubLabel>
               {choghadiyaDay.map((item, ii) => renderRow(item, ii === choghadiyaDay.length - 1))}
             </>
           )}
           {choghadiyaNight.length > 0 && (
             <>
-              <div style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '8px 0 2px' }}>{tr('night')}</div>
+              <SubLabel>{tr('night')}</SubLabel>
               {choghadiyaNight.map((item, ii) => renderRow(item, ii === choghadiyaNight.length - 1))}
             </>
           )}
@@ -117,16 +129,19 @@ export default function MuhurtaPage() {
 
       {(gowriDay.length > 0 || gowriNight.length > 0) && (
         <div className="card">
-          <div className="card-title">{tr('gowri')}</div>
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <MdWbSunny size={20} color="var(--gold)" />
+            {tr('gowri')}
+          </div>
           {gowriDay.length > 0 && (
             <>
-              <div style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '4px 0 2px' }}>{tr('day')}</div>
+              <SubLabel>{tr('day')}</SubLabel>
               {gowriDay.map((item, ii) => renderRow(item, ii === gowriDay.length - 1))}
             </>
           )}
           {gowriNight.length > 0 && (
             <>
-              <div style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '8px 0 2px' }}>{tr('night')}</div>
+              <SubLabel>{tr('night')}</SubLabel>
               {gowriNight.map((item, ii) => renderRow(item, ii === gowriNight.length - 1))}
             </>
           )}

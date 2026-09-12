@@ -1,26 +1,39 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { useI18n, type Lang } from './i18n';
 import { AnimatePresence, motion } from 'framer-motion';
-import { MdHome, MdAccessTime, MdStar, MdTrendingUp, MdMenu, MdLanguage, MdMyLocation, MdLocationOn, MdAccountBalance } from 'react-icons/md';
+import { MdHome, MdAccessTime, MdCalendarToday, MdCompareArrows, MdPerson, MdMenu, MdLanguage, MdMyLocation, MdLocationOn } from 'react-icons/md';
 import { locations } from './lib/locations';
 
+import HomePage from './pages/HomePage';
 import PanchangPage from './pages/PanchangPage';
 import MuhurtaPage from './pages/MuhurtaPage';
-import GrahaPage from './pages/GrahaPage';
-import TransitsPage from './pages/TransitsPage';
+import GocharPage from './pages/GocharPage';
 import KundliPage from './pages/KundliPage';
 import PWAInstallManager from './components/PWAInstallManager';
 
-type Page = 'panchang' | 'muhurta' | 'graha' | 'transits' | 'kundli';
+type Page = 'home' | 'panchang' | 'muhurta' | 'gochar' | 'kundli';
 
 const NAV_ITEMS: { key: Page; labelEn: string; icon: React.ReactNode }[] = [
-  { key: 'panchang', labelEn: 'Panchang', icon: <MdHome /> },
+  { key: 'home', labelEn: 'Home', icon: <MdHome /> },
+  { key: 'panchang', labelEn: 'Panchang', icon: <MdCalendarToday /> },
   { key: 'muhurta', labelEn: 'Muhurta', icon: <MdAccessTime /> },
-  { key: 'graha', labelEn: 'Graha', icon: <MdStar /> },
-  { key: 'transits', labelEn: 'Transits', icon: <MdTrendingUp /> },
-  { key: 'kundli', labelEn: 'Kundli', icon: <MdAccountBalance /> },
+  { key: 'gochar', labelEn: 'Gochar', icon: <MdCompareArrows /> },
+  { key: 'kundli', labelEn: 'Kundli', icon: <MdPerson /> },
 ];
+
+interface NavContextType {
+  navigate: (page: Page) => void;
+  currentPage: Page;
+}
+
+const NavContext = createContext<NavContextType | null>(null);
+
+export function useNavigation() {
+  const ctx = useContext(NavContext);
+  if (!ctx) throw new Error('useNavigation must be used within NavProvider');
+  return ctx;
+}
 
 function LocationBar() {
   const { lang, location, setLocation, useGps, gpsLoading } = useApp();
@@ -70,7 +83,7 @@ function LocationBar() {
 function AppShell() {
   const { lang, setLang, location, setLocation, useGps, setUseGps, gpsLoading, gpsError, isOnline } = useApp();
   const { tr } = useI18n(lang);
-  const [page, setPage] = useState<Page>('panchang');
+  const [page, setPage] = useState<Page>('home');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [splash, setSplash] = useState(true);
 
@@ -79,22 +92,27 @@ function AppShell() {
     return () => clearTimeout(timer);
   }, []);
 
+  const navigate = (targetPage: Page) => {
+    setPage(targetPage);
+    setDrawerOpen(false);
+  };
+
   const renderPage = () => {
     switch (page) {
+      case 'home': return <HomePage onOpenMenu={() => setDrawerOpen(true)} />;
       case 'panchang': return <PanchangPage />;
       case 'muhurta': return <MuhurtaPage />;
-      case 'graha': return <GrahaPage />;
-      case 'transits': return <TransitsPage />;
+      case 'gochar': return <GocharPage />;
       case 'kundli': return <KundliPage />;
     }
   };
 
   const navLabel = (key: Page) => {
     const map: Record<Page, string> = {
+      home: tr('home'),
       panchang: tr('panchang'),
       muhurta: tr('muhurta'),
-      graha: tr('graha'),
-      transits: tr('transits'),
+      gochar: tr('gochar'),
       kundli: tr('kundli'),
     };
     return map[key] ?? key;
@@ -107,8 +125,9 @@ function AppShell() {
   ];
 
   return (
-    <>
-      <AnimatePresence>
+    <NavContext.Provider value={{ navigate, currentPage: page }}>
+      <>
+        <AnimatePresence>
         {splash && (
           <motion.div
             className="splash-overlay"
@@ -130,17 +149,19 @@ function AppShell() {
         </div>
       )}
 
-      <header className="header">
-        <div className="header-left">
-          <button onClick={() => setDrawerOpen(true)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40 }}>
-            <MdMenu size={24} color="var(--olive)" />
-          </button>
-        </div>
-        <div className="header-brand">Panchang</div>
-        <div className="header-right" />
-      </header>
+      {page !== 'home' && (
+        <header className="header">
+          <div className="header-left">
+            <button onClick={() => setDrawerOpen(true)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40 }}>
+              <MdMenu size={24} color="var(--gold-light)" />
+            </button>
+          </div>
+          <div className="header-brand">Panchang</div>
+          <div className="header-right" />
+        </header>
+      )}
 
-      {page !== 'transits' && <LocationBar />}
+      {page !== 'gochar' && page !== 'home' && <LocationBar />}
 
       <main className="main-content">
         {renderPage()}
@@ -151,7 +172,7 @@ function AppShell() {
           <button
             key={item.key}
             className={`nav-item ${page === item.key ? 'active' : ''}`}
-            onClick={() => setPage(item.key)}
+            onClick={() => navigate(item.key)}
           >
             {item.icon}
             <span>{navLabel(item.key)}</span>
@@ -222,7 +243,8 @@ function AppShell() {
           </>
         )}
       </AnimatePresence>
-    </>
+      </>
+    </NavContext.Provider>
   );
 }
 

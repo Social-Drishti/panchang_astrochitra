@@ -1,14 +1,5 @@
 @import './variables.css';
 
-@font-face {
-  font-family: 'AstroChitra';
-  src: url('/fonts/AstroChitra.woff2') format('woff2'),
-       url('/fonts/AstroChitra.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;

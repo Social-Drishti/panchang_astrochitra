@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { useI18n } from '../i18n';
 import { getPanchang, type PanchangData } from '../lib/panchang';
 import { formatDate } from '../lib/constants';
-import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
+import { MdChevronLeft, MdChevronRight, MdWbSunny, MdNightlight, MdCalendarToday } from 'react-icons/md';
 
 export default function PanchangPage() {
   const { lang, location, selectedDate, setSelectedDate } = useApp();
@@ -35,27 +35,14 @@ export default function PanchangPage() {
     );
   }
 
-  const Item = ({ label, value }: { label: string; value: string }) => (
+  const Item = ({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) => (
     <div className="field-item">
-      <span className="field-label">{label}</span>
+      <span className="field-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        {icon && <span style={{ fontSize: '14px', color: 'var(--gold)' }}>{icon}</span>}
+        {label}
+      </span>
       <span className="field-value">{value}</span>
     </div>
-  );
-
-  const TimingRow = ({ name, rating, start, end, isLast }: { name: string; rating: string; start: string | null; end: string | null; isLast: boolean }) => (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', padding: '6px 0', borderBottom: isLast ? 'none' : '1px solid var(--border)' }}>
-      <span style={{ fontWeight: 500, fontSize: '14px' }}>{name}</span>
-      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span className={`chip chip-${rating}`}>{tr(rating)}</span>
-        {start && end && (
-          <span style={{ fontSize: '13px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{start} - {end}</span>
-        )}
-      </span>
-    </div>
-  );
-
-  const SubLabel = ({ children }: { children: string }) => (
-    <div style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '4px 0 2px' }}>{children}</div>
   );
 
   return (
@@ -69,18 +56,24 @@ export default function PanchangPage() {
 
       {/* Sunrise/Sunset/Moonrise/Moonset */}
       <div className="card">
-        <div className="card-title">{formatDate(new Date(selectedDate + 'T00:00:00'), lang)}</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <MdWbSunny size={20} color="var(--gold)" />
+          {formatDate(new Date(selectedDate + 'T00:00:00'), lang)}
+        </div>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          <Item label={tr('sunrise')} value={data.sunrise} />
-          <Item label={tr('sunset')} value={data.sunset} />
-          <Item label={tr('moonrise')} value={data.moonrise} />
-          <Item label={tr('moonset')} value={data.moonset} />
+          <Item label={tr('sunrise')} value={data.sunrise} icon={<MdWbSunny size={14} />} />
+          <Item label={tr('sunset')} value={data.sunset} icon={<MdNightlight size={14} />} />
+          <Item label={tr('moonrise')} value={data.moonrise} icon={<MdNightlight size={14} />} />
+          <Item label={tr('moonset')} value={data.moonset} icon={<MdNightlight size={14} />} />
         </div>
       </div>
 
       {/* Tithi, Nakshatra, Yoga, Karana, Vara */}
       <div className="card">
-        <div className="card-title">{tr('panchang')}</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <MdCalendarToday size={20} color="var(--gold)" />
+          {tr('panchang')}
+        </div>
         <div className="field-grid">
           <Item label={tr('tithi')} value={data.tithi} />
           <Item label={tr('nakshatra')} value={data.nakshatra} />
@@ -95,7 +88,10 @@ export default function PanchangPage() {
 
       {/* Rashi + Lagna */}
       <div className="card">
-        <div className="card-title">{tr('planets')}</div>
+        <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '18px', color: 'var(--gold)' }}>★</span>
+          {tr('planets')}
+        </div>
         <div className="field-grid">
           <Item label={tr('moonRashi')} value={data.moonRashi} />
           <Item label={tr('sunRashi')} value={data.sunRashi} />
@@ -103,80 +99,32 @@ export default function PanchangPage() {
         </div>
       </div>
 
-      {/* Auspicious timings */}
-      <div className="card">
-        <div className="card-title">{tr('rahuKalam')}</div>
-        <div className="field-grid">
-          <Item label={tr('rahuKalam')} value={data.rahuKalam} />
-          <Item label={tr('yamaganda')} value={data.yamaganda} />
-          <Item label={tr('gulikaKalam')} value={data.gulikaKalam} />
-          <Item label={tr('abhijitMuhurta')} value={data.abhijitMuhurta} />
-          <Item label={tr('brahmaMuhurta')} value={data.brahmaMuhurta} />
-        </div>
-      </div>
-
-      {/* Choghadiya timings */}
-      {((data.choghadiya?.day?.length ?? 0) > 0 || (data.choghadiya?.night?.length ?? 0) > 0) && (
-        <div className="card">
-          <div className="card-title">{tr('choghadiya')}</div>
-          {(data.choghadiya?.day?.length ?? 0) > 0 && (
-            <>
-              <SubLabel>{tr('day')}</SubLabel>
-              {data.choghadiya!.day.map((c, i) => (
-                <TimingRow key={`cd-${i}`} name={c.name} rating={c.rating} start={c.start} end={c.end} isLast={i === data.choghadiya!.day.length - 1 && (data.choghadiya!.night?.length ?? 0) === 0} />
-              ))}
-            </>
-          )}
-          {(data.choghadiya?.night?.length ?? 0) > 0 && (
-            <>
-              <SubLabel>{tr('night')}</SubLabel>
-              {data.choghadiya!.night.map((c, i) => (
-                <TimingRow key={`cn-${i}`} name={c.name} rating={c.rating} start={c.start} end={c.end} isLast={i === data.choghadiya!.night.length - 1} />
-              ))}
-            </>
-          )}
-        </div>
-      )}
-
-      {/* Gowri timings */}
-      {((data.gowri?.day?.length ?? 0) > 0 || (data.gowri?.night?.length ?? 0) > 0) && (
-        <div className="card">
-          <div className="card-title">{tr('gowri')}</div>
-          {(data.gowri?.day?.length ?? 0) > 0 && (
-            <>
-              <SubLabel>{tr('day')}</SubLabel>
-              {data.gowri!.day.map((g, i) => (
-                <TimingRow key={`gd-${i}`} name={g.name} rating={g.rating} start={g.start} end={g.end} isLast={i === data.gowri!.day.length - 1 && (data.gowri!.night?.length ?? 0) === 0} />
-              ))}
-            </>
-          )}
-          {(data.gowri?.night?.length ?? 0) > 0 && (
-            <>
-              <SubLabel>{tr('night')}</SubLabel>
-              {data.gowri!.night.map((g, i) => (
-                <TimingRow key={`gn-${i}`} name={g.name} rating={g.rating} start={g.start} end={g.end} isLast={i === data.gowri!.night.length - 1} />
-              ))}
-            </>
-          )}
-        </div>
-      )}
-
       {/* Festivals & Special Yogas */}
       {data.festivals.length > 0 && (
         <div className="card">
-          <div className="card-title">{tr('festivals')}</div>
-          {data.festivals.map((f, i) => (
-            <div key={i} className="chip chip-gold" style={{ marginBottom: '4px' }}>{f}</div>
-          ))}
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '18px', color: 'var(--gold)' }}>🎉</span>
+            {tr('festivals')}
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+            {data.festivals.map((f, i) => (
+              <div key={i} className="chip chip-gold" style={{ fontSize: '12px' }}>{f}</div>
+            ))}
+          </div>
         </div>
       )}
 
       {data.specialYogas.length > 0 && (
         <div className="card">
-          <div className="card-title">{tr('specialYogas')}</div>
-          {data.specialYogas.map((y, i) => (
-            <div key={i} className="chip chip-gold" style={{ marginBottom: '4px' }}>{y}</div>
-          ))}
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '18px', color: 'var(--gold)' }}>✨</span>
+            {tr('specialYogas')}
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+            {data.specialYogas.map((y, i) => (
+              <div key={i} className="chip chip-gold" style={{ fontSize: '12px' }}>{y}</div>
+            ))}
+          </div>
         </div>
       )}
 

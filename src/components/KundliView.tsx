@@ -32,11 +32,11 @@ export function DisplayCard({ title, children }: { title: string; children: Reac
 
 export function Row({ label, value, sub, valueColor }: { label: string; value: string; sub?: string; valueColor?: string }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', padding: '6px 0', borderBottom: '1px solid var(--border)' }}>
-      <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{label}</span>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', padding: '6px 0', borderBottom: '1px solid var(--card-line)' }}>
+      <span style={{ fontSize: '13px', color: 'var(--card-text-2)' }}>{label}</span>
       <div style={{ textAlign: 'right' }}>
         <span style={{ fontSize: '14px', fontWeight: 600, color: valueColor }}>{value}</span>
-        {sub && <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{sub}</div>}
+        {sub && <div style={{ fontSize: '11px', color: 'var(--card-text-3)' }}>{sub}</div>}
       </div>
     </div>
   );
@@ -44,7 +44,7 @@ export function Row({ label, value, sub, valueColor }: { label: string; value: s
 
 function PlanetBadge({ p, showNakshatra = false }: { p: PlanetInfo; showNakshatra?: boolean }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', padding: '8px 0', borderBottom: '1px solid var(--card-line)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
         <span style={{ width: 10, height: 10, borderRadius: '50%', background: PLANET_COLORS[p.key] || '#999', flexShrink: 0 }} />
         <div style={{ minWidth: 0 }}>
@@ -52,17 +52,17 @@ function PlanetBadge({ p, showNakshatra = false }: { p: PlanetInfo; showNakshatr
             {PLANET_SANS[p.key] || p.key}
             {p.isRetro && <span className="chip chip-bad" style={{ fontSize: '10px', padding: '1px 6px' }}>R</span>}
           </div>
-          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{p.key}</div>
+          <div style={{ fontSize: '11px', color: 'var(--card-text-3)' }}>{p.key}</div>
         </div>
       </div>
       <div style={{ textAlign: 'right', flexShrink: 0 }}>
         <div style={{ fontSize: '13px', fontWeight: 600 }}>{p.signName} · H{p.houseNumber}</div>
-        <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{formatDegMin(p.normDegree)}{p.isRetro ? ' (R)' : ''}</div>
+        <div style={{ fontSize: '11px', color: 'var(--card-text-2)' }}>{formatDegMin(p.normDegree)}{p.isRetro ? ' (R)' : ''}</div>
       </div>
       {showNakshatra && (
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
           <div style={{ fontSize: '12px', fontWeight: 600 }}>{p.nakshatraName}</div>
-          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{p.nakshatraLord} · pada {p.nakshatraPada}</div>
+          <div style={{ fontSize: '11px', color: 'var(--card-text-3)' }}>{p.nakshatraLord} · pada {p.nakshatraPada}</div>
         </div>
       )}
     </div>
@@ -120,7 +120,7 @@ export default function KundliView({ kundli, saved, onSave, onBack }: KundliView
       )}
 
       <DisplayCard title="Janma Kundli">
-        <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--olive)' }}>{kundli.personName}</div>
+        <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--card-gold)' }}>{kundli.personName}</div>
         <Row label="Birth (local)" value={kundli.localDateTime} />
         <Row label="Birth (UTC)" value={kundli.utcDateTime} />
         <Row label="Place" value={kundli.placeName} />
@@ -153,7 +153,7 @@ export default function KundliView({ kundli, saved, onSave, onBack }: KundliView
           selectedHouse={showHouse}
           onHouseClick={setShowHouse}
         />
-        <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', marginTop: '4px' }}>
+        <div style={{ fontSize: '12px', color: 'var(--card-text-3)', textAlign: 'center', marginTop: '4px' }}>
           Tap any bhav (house) to see its details
         </div>
       </DisplayCard>
@@ -180,18 +180,18 @@ export default function KundliView({ kundli, saved, onSave, onBack }: KundliView
               sub={`${bhavNakshatra.lord} · pada ${bhavNakshatra.pada}`}
             />
           )}
-          <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--olive)', padding: '10px 0 0px' }}>
+          <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--card-gold)', padding: '10px 0 0px' }}>
             Planets in this bhav
           </div>
           {selectedHouse.planets.length === 0 ? (
-            <div style={{ fontSize: '12px', color: 'var(--text-muted)', padding: '8px 0' }}>
+            <div style={{ fontSize: '12px', color: 'var(--card-text-3)', padding: '8px 0' }}>
               No planets in this bhav
             </div>
           ) : (
             selectedHouse.planets.map(p => (
-              <div key={p.key} style={{ borderBottom: '1px solid var(--border)', padding: '2px 0' }}>
+              <div key={p.key} style={{ borderBottom: '1px solid var(--card-line)', padding: '2px 0' }}>
                 <PlanetBadge p={p} showNakshatra />
-                <div style={{ fontSize: '11px', color: 'var(--text-muted)', padding: '0 0 8px' }}>
+                <div style={{ fontSize: '11px', color: 'var(--card-text-3)', padding: '0 0 8px' }}>
                   Dignity: {p.dignity}
                   {p.combust ? ' · Combust' : ''}
                   {p.karaka ? ` · Karaka: ${p.karaka}` : ''}
@@ -220,26 +220,26 @@ export default function KundliView({ kundli, saved, onSave, onBack }: KundliView
           />
         )}
         <div style={{ marginTop: '8px' }}>
-          <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--olive)', marginBottom: '4px' }}>Mahadasha</div>
+          <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--card-gold)', marginBottom: '4px' }}>Mahadasha</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px 8px', fontSize: '11px' }}>
             {kundli.dasha.mahaDasas.map(m => (
-              <div key={m.lord} style={{ padding: '4px', borderBottom: '1px solid var(--border)' }}>
+              <div key={m.lord} style={{ padding: '4px', borderBottom: '1px solid var(--card-line)' }}>
                 <span style={{ fontWeight: 600 }}>{m.lord}</span>
-                <div style={{ color: 'var(--text-muted)' }}>{m.startStr} → {m.endStr}</div>
+                <div style={{ color: 'var(--card-text-3)' }}>{m.startStr} → {m.endStr}</div>
               </div>
             ))}
           </div>
         </div>
         {kundli.dasha.antarDasas.length > 0 && (
           <div style={{ marginTop: '8px' }}>
-            <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--olive)', marginBottom: '4px' }}>
+            <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--card-gold)', marginBottom: '4px' }}>
               Antardasha ({kundli.dasha.currentMaha?.lord ?? ''})
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px 8px', fontSize: '11px' }}>
               {kundli.dasha.antarDasas.map((a, i) => (
-                <div key={`${a.lord}-${i}`} style={{ padding: '4px', borderBottom: '1px solid var(--border)' }}>
+                <div key={`${a.lord}-${i}`} style={{ padding: '4px', borderBottom: '1px solid var(--card-line)' }}>
                   <span style={{ fontWeight: 600 }}>{a.lord}</span>
-                  <div style={{ color: 'var(--text-muted)' }}>{a.startStr} → {a.endStr}</div>
+                  <div style={{ color: 'var(--card-text-3)' }}>{a.startStr} → {a.endStr}</div>
                 </div>
               ))}
             </div>
