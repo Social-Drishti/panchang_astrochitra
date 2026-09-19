@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { KundliData, HouseInfo, PlanetInfo } from '../lib/kundli';
 import { RASHI_NAME, nakshatraAtLongitude } from '../lib/kundli';
-import KundliChart from './KundliChart';
+import RasiChart from './RasiChart';
 import { MdSave } from 'react-icons/md';
 import { useApp } from '../context/AppContext';
 import { useI18n } from '../i18n';
@@ -150,17 +150,16 @@ export default function KundliView({ kundli, saved, onSave, onBack }: KundliView
         </button>
       )}
 
-      <DisplayCard title={tr('chartTitle')}>
-        <KundliChart
-          houseData={chartHouseData}
-          ascendantSign={kundli.ascendantSign}
-          selectedHouse={showHouse}
-          onHouseClick={setShowHouse}
-        />
-        <div style={{ fontSize: '12px', color: 'var(--card-text-3)', textAlign: 'center', marginTop: '4px' }}>
-          {tr('tapBhavHint')}
-        </div>
-      </DisplayCard>
+      <RasiChart
+        houseData={chartHouseData}
+        ascendantSign={kundli.ascendantSign}
+        selectedHouse={showHouse}
+        onHouseClick={setShowHouse}
+        strokeOnText={false}
+        hairlineBorder
+        size={420}
+        planetDisplay="initials"
+      />
 
       {selectedHouse && (
         <DisplayCard title={`${tr('houses')} ${selectedHouse.houseNumber} — ${selectedHouse.signName} (${selectedHouse.rashiName})`}>

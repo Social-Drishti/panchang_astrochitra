@@ -21,6 +21,10 @@ interface RasiChartProps {
   highlightPlanet?: string;
   showHeader?: boolean;
   transitMode?: TransitMode;
+  selectedHouse?: number | null;
+  onHouseClick?: (house: number) => void;
+  strokeOnText?: boolean;
+  hairlineBorder?: boolean;
   size?: number;
   planetDisplay?: 'icons' | 'initials';
 }
@@ -108,6 +112,10 @@ export default function RasiChart({
   showHeader = false,
   transitMode,
   size = 300,
+  selectedHouse,
+  onHouseClick,
+  strokeOnText = true,
+  hairlineBorder = false,
   planetDisplay = 'icons',
 }: RasiChartProps) {
   const houseData = useMemo(() => {
@@ -162,7 +170,9 @@ export default function RasiChart({
           // maxWidth: `${size}px`,
           height: 'auto',
           background: `linear-gradient(135deg, ${FILL_LIGHT} 0%, ${FILL} 100%)`,
-          border: `3px double ${STROKE}`,
+          border: hairlineBorder
+            ? `1px solid ${STROKE}`
+            : `3px double ${STROKE}`,
           boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
           display: 'block',
         }}
@@ -265,9 +275,9 @@ export default function RasiChart({
                 fontSize={rashiFontSize}
                 fontWeight={700}
                 fontFamily="Georgia, serif"
-                paintOrder="stroke fill"
-                stroke="rgba(255,251,230,0.9)"
-                strokeWidth="2.5px"
+                paintOrder={strokeOnText ? 'stroke fill' : undefined}
+                stroke={strokeOnText ? 'rgba(255,251,230,0.95)' : undefined}
+                strokeWidth={strokeOnText ? '3px' : undefined}
               >
                 {house.signNumber}
               </text>
@@ -282,9 +292,9 @@ export default function RasiChart({
                 fontSize={rashiFontSize - 1}
                 fontFamily="Georgia, serif"
                 fontWeight={700}
-                paintOrder="stroke fill"
-                stroke="rgba(255,251,230,0.9)"
-                strokeWidth="2.5px"
+                paintOrder={strokeOnText ? 'stroke fill' : undefined}
+                stroke={strokeOnText ? 'rgba(255,251,230,0.9)' : undefined}
+                strokeWidth={strokeOnText ? '2.5px' : undefined}
               >
                 {house.rashiName}
               </text>
@@ -343,14 +353,14 @@ export default function RasiChart({
                           x={center.x + offX} y={pY}
                           textAnchor="middle" dominantBaseline="middle"
                           fill={colr}
-                          fontSize={planetFontSize}
-                          fontWeight={isHL ? 900 : 800}
-                          fontFamily="Georgia, serif"
-                          paintOrder="stroke fill"
-                          stroke="rgba(255,251,230,0.95)"
-                          strokeWidth="3px"
-                        >
-                          {abbr}{retro}
+                  fontSize={planetFontSize}
+                  fontWeight={isHL ? 900 : 800}
+                  fontFamily="Georgia, serif"
+                  paintOrder={strokeOnText ? 'stroke fill' : undefined}
+                  stroke={strokeOnText ? 'rgba(255,251,230,0.95)' : undefined}
+                  strokeWidth={strokeOnText ? '3px' : undefined}
+                >
+                  {abbr}{retro}
                         </text>
                       </g>
                     );
