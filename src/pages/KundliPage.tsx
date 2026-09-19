@@ -264,7 +264,7 @@ export default function KundliPage({ onClose }: KundliPageProps) {
                 </button>
                 <button
                   onClick={() => handleDelete(savedId)}
-                  style={{ color: '#ff8a80', padding: '8px', flexShrink: 0, display: 'flex' }}
+                  style={{ color: 'var(--danger)', padding: '8px', flexShrink: 0, display: 'flex' }}
                   aria-label={tr('delete')}
                 >
                   <MdDelete size={22} />

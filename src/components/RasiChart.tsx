@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
 import type { PlanetPositions } from '../lib/panchang';
 
 interface PlanetData {
@@ -64,12 +64,12 @@ const PLANET_COLORS: Record<string, string> = {
   Rahu: '#2F4F4F', Ketu: '#8B4513',
 };
 
-const STROKE = '#8b7a3a';
-const STROKE_LIGHT = '#a0925a';
-const FILL = '#fffbe6';
-const FILL_LIGHT = '#ffffff';
-const ACCENT = '#f5a623';
-const TEXT_MUTED = '#654e12';
+const STROKE = '#c2410c';
+const STROKE_LIGHT = '#d9711c';
+const FILL = '#ffffff';
+const FILL_LIGHT = '#fbf7f0';
+const ACCENT = '#8e2a1c';
+const TEXT_MUTED = '#6b6253';
 
 // All coordinates in 300x300 viewBox space
 const NORTH_PATHS: Record<number, string> = {

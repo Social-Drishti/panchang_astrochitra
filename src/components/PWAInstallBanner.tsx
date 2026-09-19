@@ -30,10 +30,10 @@ export default function PWAInstallBanner({ show, onInstall, onDismiss }: Props) 
             alignItems: 'center',
             gap: '10px',
             padding: '10px 14px',
-            background: 'rgba(61, 46, 10, 0.96)',
+            background: 'rgba(255, 255, 255, 0.96)',
             backdropFilter: 'blur(8px)',
             WebkitBackdropFilter: 'blur(8px)',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
+            boxShadow: 'inset 0 -1px 0 var(--border)',
           }}>
             <img
               src="/icons/icon-96x96.png"
@@ -44,7 +44,7 @@ export default function PWAInstallBanner({ show, onInstall, onDismiss }: Props) 
               flex: 1,
               fontSize: '13px',
               fontWeight: 600,
-              color: 'var(--gold-light)',
+              color: 'var(--card-text)',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -54,8 +54,8 @@ export default function PWAInstallBanner({ show, onInstall, onDismiss }: Props) 
             <button
               onClick={onInstall}
               style={{
-                background: 'var(--gold)',
-                color: 'var(--bg)',
+                background: 'var(--olive)',
+                color: '#ffffff',
                 padding: '6px 16px',
                 borderRadius: '8px',
                 fontSize: '13px',
@@ -76,7 +76,7 @@ export default function PWAInstallBanner({ show, onInstall, onDismiss }: Props) 
                 flexShrink: 0,
               }}
             >
-              <MdClose size={18} color="var(--gold-light)" />
+              <MdClose size={18} color="var(--text-muted)" />
             </button>
           </div>
         </motion.div>

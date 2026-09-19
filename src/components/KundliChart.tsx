@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
 
 interface ChartPlanet {
   key: string;
@@ -38,13 +38,13 @@ const PLANET_COLORS: Record<string, string> = {
   Rahu: '#2F4F4F', Ketu: '#8B4513', Ascendant: '#8B0000',
 };
 
-const STROKE = '#8b7a3a';
-const FILL = '#fffbe6';
-const FILL_LIGHT = '#ffffff';
-const ACCENT = '#8B0000';
-const TEXT_MUTED = '#654e12';
-const SEL_FILL = 'rgba(245,166,35,0.30)';
-const HOVER_FILL = 'rgba(245,166,35,0.12)';
+const STROKE = '#c2410c';
+const FILL = '#ffffff';
+const FILL_LIGHT = '#fbf7f0';
+const ACCENT = '#8e2a1c';
+const TEXT_MUTED = '#6b6253';
+const SEL_FILL = 'rgba(194,65,12,0.18)';
+const HOVER_FILL = 'rgba(194,65,12,0.08)';
 
 const NORTH_PATHS: Record<number, string> = {
   1: 'M 150 0 L 225 75 L 150 150 L 75 75 Z',
@@ -177,7 +177,7 @@ export default function KundliChart({
                 fillOpacity={isSel || isAsc ? 1 : 0.001}
                 style={{ pointerEvents: 'all' }}
               >
-                <title>{`House ${house.houseNumber} · ${house.signName} · lord ${house.rashiLord}`}</title>
+                <title>{`House ${house.houseNumber} Â· ${house.signName} Â· lord ${house.rashiLord}`}</title>
               </path>
 
               {/* Sign number + rashi name */}

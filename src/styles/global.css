@@ -105,12 +105,13 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; }
 .field-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 14px;
 }
 
 .field-item {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 /* Splash */
@@ -328,33 +329,36 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; }
 /* Improved readability for all pages */
 .card {
   background: var(--bg-card);
-  border-radius: 14px;
-  padding: 16px;
+  border-radius: 20px;
+  padding: 18px;
   margin-bottom: 12px;
   border: 1px solid var(--border);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 6px 20px rgba(36, 29, 20, 0.06);
+  color: var(--card-text);
 }
 
 .card-title {
-  font-size: 12px;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 10px;
+  font-family: var(--font-deco);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--card-gold);
+  margin-bottom: 12px;
 }
 
 .field-value {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   margin-top: 2px;
   color: var(--text);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .field-label {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
 }
 
 /* Better button styles */
@@ -449,9 +453,9 @@ input::placeholder {
 
 .dt-ampm {
   display: flex;
-  background: rgba(255, 246, 230, 0.1);
-  border: 1.5px solid var(--card-line);
-  border-radius: 10px;
+  background: #fbf7f0;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -478,9 +482,9 @@ input::placeholder {
   justify-content: center;
   width: 44px;
   height: 44px;
-  border: 1.5px solid var(--card-line);
+  border: 1.5px solid var(--border);
   border-radius: 12px;
-  background: rgba(255, 246, 230, 0.1);
+  background: #fbf7f0;
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -506,10 +510,10 @@ input::placeholder {
   z-index: 10;
   margin-bottom: 12px;
   padding: 5px;
-  background: var(--card-grad);
-  border: 1px solid var(--card-line);
-  border-radius: 14px;
-  box-shadow: 0 8px 20px rgba(74, 44, 16, 0.4);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 1px 1px rgba(36, 29, 20, 0.04), 0 4px 12px rgba(36, 29, 20, 0.06);
 }
 
 .k-tab {
@@ -536,8 +540,8 @@ input::placeholder {
 
 .k-tab.active {
   background: var(--gold-light);
-  color: #7a4c00;
-  box-shadow: 0 3px 10px rgba(38, 24, 8, 0.4);
+  color: var(--olive);
+  box-shadow: 0 1px 3px rgba(142, 42, 28, 0.12);
 }
 
 .k-tab-count {
@@ -1018,20 +1022,19 @@ input::placeholder {
    ============================================================ */
 
 .card {
-  background: var(--card-grad);
-  border-radius: 22px;
+  background: var(--bg-card);
+  border-radius: 20px;
   padding: 18px;
-  margin-bottom: 14px;
-  border: 1px solid rgba(255, 246, 230, 0.16);
-  box-shadow: 0 14px 30px rgba(74, 44, 16, 0.35), inset 0 1px 0 rgba(255, 246, 230, 0.1);
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 6px 20px rgba(36, 29, 20, 0.06);
   color: var(--card-text);
 }
 
 .card-title {
   font-family: var(--font-deco);
-  font-size: 17px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--card-gold);
   margin-bottom: 12px;
 }
