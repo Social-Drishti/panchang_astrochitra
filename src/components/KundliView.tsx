@@ -3,6 +3,8 @@ import type { KundliData, HouseInfo, PlanetInfo } from '../lib/kundli';
 import { RASHI_NAME, nakshatraAtLongitude } from '../lib/kundli';
 import KundliChart from './KundliChart';
 import { MdSave } from 'react-icons/md';
+import { useApp } from '../context/AppContext';
+import { useI18n } from '../i18n';
 
 const PLANET_COLORS: Record<string, string> = {
   Sun: '#D2691E', Moon: '#4682B4', Mars: '#B22222', Mercury: '#2E8B57',
@@ -77,6 +79,8 @@ interface KundliViewProps {
 }
 
 export default function KundliView({ kundli, saved, onSave, onBack }: KundliViewProps) {
+  const { lang } = useApp();
+  const { tr } = useI18n(lang);
   const [showHouse, setShowHouse] = useState<number | null>(1);
 
   const chartHouseData = useMemo(() => {
@@ -115,22 +119,22 @@ export default function KundliView({ kundli, saved, onSave, onBack }: KundliView
           onClick={onBack}
           style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--olive)', fontSize: '14px', fontWeight: 600, marginBottom: '8px' }}
         >
-          ← &nbsp;Back
+          ← &nbsp;{tr('back')}
         </button>
       )}
 
-      <DisplayCard title="Janma Kundli">
+      <DisplayCard title={tr('janmaKundli')}>
         <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--card-gold)' }}>{kundli.personName}</div>
-        <Row label="Birth (local)" value={kundli.localDateTime} />
-        <Row label="Birth (UTC)" value={kundli.utcDateTime} />
-        <Row label="Place" value={kundli.placeName} />
+        <Row label={tr('birthLocal')} value={kundli.localDateTime} />
+        <Row label={tr('birthUtc')} value={kundli.utcDateTime} />
+        <Row label={tr('place')} value={kundli.placeName} />
         <Row
-          label="Ascendant (Lagna)"
+          label={tr('ascendant')}
           value={`${kundli.ascendantSignName} (${kundli.ascendantRashiName})`}
           sub={`${kundli.lagna.nakshatraName} · ${kundli.lagna.nakshatraLord} · pada ${kundli.lagna.pada}`}
         />
         <Row
-          label="Moon Sign"
+          label={tr('moonSign')}
           value={`${kundli.moonSignName} (${RASHI_NAME[kundli.moonSignName] || ''})`}
           sub={kundli.moonNakshatra}
         />
@@ -142,11 +146,11 @@ export default function KundliView({ kundli, saved, onSave, onBack }: KundliView
           onClick={onSave}
           style={{ width: '100%', marginBottom: '12px' }}
         >
-          <MdSave size={18} />&nbsp;{saved ? 'Saved — tap to update' : 'Save Kundli'}
+          <MdSave size={18} />&nbsp;{saved ? tr('savedTapUpdate') : tr('saveKundli')}
         </button>
       )}
 
-      <DisplayCard title="Janma Kundali Chart">
+      <DisplayCard title={tr('chartTitle')}>
         <KundliChart
           houseData={chartHouseData}
           ascendantSign={kundli.ascendantSign}
@@ -154,47 +158,47 @@ export default function KundliView({ kundli, saved, onSave, onBack }: KundliView
           onHouseClick={setShowHouse}
         />
         <div style={{ fontSize: '12px', color: 'var(--card-text-3)', textAlign: 'center', marginTop: '4px' }}>
-          Tap any bhav (house) to see its details
+          {tr('tapBhavHint')}
         </div>
       </DisplayCard>
 
       {selectedHouse && (
-        <DisplayCard title={`House ${selectedHouse.houseNumber} — ${selectedHouse.signName} (${selectedHouse.rashiName})`}>
-          <Row label="Sign" value={`${selectedHouse.signNumber} · ${selectedHouse.signName}`} />
-          <Row label="Rashi" value={selectedHouse.rashiName} />
+        <DisplayCard title={`${tr('houses')} ${selectedHouse.houseNumber} — ${selectedHouse.signName} (${selectedHouse.rashiName})`}>
+          <Row label={tr('sign')} value={`${selectedHouse.signNumber} · ${selectedHouse.signName}`} />
+          <Row label={tr('rashi')} value={selectedHouse.rashiName} />
           <Row
-            label={`Lord (${selectedHouse.rashiName})`}
+            label={`${tr('lord')} (${selectedHouse.rashiName})`}
             value={`${selectedHouse.rashiLord}${selectedHouse.rashiLordSa ? ` · ${selectedHouse.rashiLordSa}` : ''}`}
           />
           {lordPlacement && (
             <Row
-              label="Lord Placement"
+              label={tr('lordPlacement')}
               value={`${lordPlacement.signName} · H${lordPlacement.houseNumber}`}
               sub={`${lordPlacement.nakshatraName} · ${lordPlacement.nakshatraLord} · pada ${lordPlacement.nakshatraPada}`}
             />
           )}
           {bhavNakshatra && (
             <Row
-              label="Nakshatra at bhav start"
+              label={tr('bhavStartNakshatra')}
               value={bhavNakshatra.name}
               sub={`${bhavNakshatra.lord} · pada ${bhavNakshatra.pada}`}
             />
           )}
           <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--card-gold)', padding: '10px 0 0px' }}>
-            Planets in this bhav
+            {tr('planetsInBhav')}
           </div>
           {selectedHouse.planets.length === 0 ? (
             <div style={{ fontSize: '12px', color: 'var(--card-text-3)', padding: '8px 0' }}>
-              No planets in this bhav
+              {tr('noPlanets')}
             </div>
           ) : (
             selectedHouse.planets.map(p => (
               <div key={p.key} style={{ borderBottom: '1px solid var(--card-line)', padding: '2px 0' }}>
                 <PlanetBadge p={p} showNakshatra />
                 <div style={{ fontSize: '11px', color: 'var(--card-text-3)', padding: '0 0 8px' }}>
-                  Dignity: {p.dignity}
-                  {p.combust ? ' · Combust' : ''}
-                  {p.karaka ? ` · Karaka: ${p.karaka}` : ''}
+                  {tr('dignity')}: {p.dignity}
+                  {p.combust ? ` · ${tr('combust')}` : ''}
+                  {p.karaka ? ` · ${tr('karaka')}: ${p.karaka}` : ''}
                 </div>
               </div>
             ))
@@ -202,25 +206,25 @@ export default function KundliView({ kundli, saved, onSave, onBack }: KundliView
         </DisplayCard>
       )}
 
-      <DisplayCard title="Vimshottari Dasha">
-        <Row label="Birth Nakshatra" value={kundli.dasha.birthNakshatra} />
-        <Row label="Dasha Balance" value={kundli.dasha.dashaBalance} />
+      <DisplayCard title={tr('vimshottari')}>
+        <Row label={tr('birthNakshatra')} value={kundli.dasha.birthNakshatra} />
+        <Row label={tr('dashaBalance')} value={kundli.dasha.dashaBalance} />
         {kundli.dasha.currentMaha && (
           <Row
-            label="Current Mahadasha"
+            label={tr('currentMaha')}
             value={kundli.dasha.currentMaha.lord}
             sub={`${kundli.dasha.currentMaha.startStr} → ${kundli.dasha.currentMaha.endStr}`}
           />
         )}
         {kundli.dasha.currentAntar && (
           <Row
-            label="Current Antardasha"
+            label={tr('currentAntar')}
             value={kundli.dasha.currentAntar.lord}
             sub={`${kundli.dasha.currentAntar.startStr} → ${kundli.dasha.currentAntar.endStr}`}
           />
         )}
         <div style={{ marginTop: '8px' }}>
-          <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--card-gold)', marginBottom: '4px' }}>Mahadasha</div>
+          <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--card-gold)', marginBottom: '4px' }}>{tr('mahadasha')}</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px 8px', fontSize: '11px' }}>
             {kundli.dasha.mahaDasas.map(m => (
               <div key={m.lord} style={{ padding: '4px', borderBottom: '1px solid var(--card-line)' }}>
@@ -233,7 +237,7 @@ export default function KundliView({ kundli, saved, onSave, onBack }: KundliView
         {kundli.dasha.antarDasas.length > 0 && (
           <div style={{ marginTop: '8px' }}>
             <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--card-gold)', marginBottom: '4px' }}>
-              Antardasha ({kundli.dasha.currentMaha?.lord ?? ''})
+              {tr('antardasha')} ({kundli.dasha.currentMaha?.lord ?? ''})
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px 8px', fontSize: '11px' }}>
               {kundli.dasha.antarDasas.map((a, i) => (

@@ -231,9 +231,6 @@ export default function KundliChart({
           );
         })}
       </svg>
-      <div style={{ fontSize: '11px', color: TEXT_MUTED, textAlign: 'center' }}>
-        Tap a bhav (house) to see its details
-      </div>
     </div>
   );
 }

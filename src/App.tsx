@@ -164,7 +164,18 @@ function AppShell() {
       {page !== 'kundli' && page !== 'home' && <LocationBar />}
 
       <main className="main-content">
-        {renderPage()}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={page}
+            className="page-transition"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+          >
+            {renderPage()}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       <nav className="bottom-nav">
@@ -174,6 +185,13 @@ function AppShell() {
             className={`nav-item ${page === item.key ? 'active' : ''}`}
             onClick={() => navigate(item.key)}
           >
+            <motion.div
+              className="nav-active-pill"
+              layoutId="nav-pill"
+              initial={false}
+              transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+              style={{ opacity: page === item.key ? 1 : 0 }}
+            />
             {item.icon}
             <span>{navLabel(item.key)}</span>
           </button>

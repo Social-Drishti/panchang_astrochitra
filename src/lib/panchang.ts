@@ -36,6 +36,10 @@ export interface PanchangResponse {
     sunrise: string | null; sunset: string | null;
     moonrise: string | null; moonset: string | null;
   };
+  dayEvents: {
+    sunrise: Date | null; sunset: Date | null;
+    moonrise: Date | null; moonset: Date | null;
+  };
   inauspicious: {
     rahuKalam: { start: string | null; end: string | null } | null;
     yamaganda: { start: string | null; end: string | null } | null;
@@ -131,6 +135,11 @@ export function calculatePanchang(dateStr: string, location: LocationInput): Pan
       moonrise: formatTime(raw.moonrise), moonset: formatTime(raw.moonset),
     },
 
+    dayEvents: {
+      sunrise: raw.sunrise ?? null, sunset: raw.sunset ?? null,
+      moonrise: raw.moonrise ?? null, moonset: raw.moonset ?? null,
+    },
+
     inauspicious: {
       rahuKalam: raw.rahuKalamStart && raw.rahuKalamEnd ? { start: formatTime(raw.rahuKalamStart), end: formatTime(raw.rahuKalamEnd) } : null,
       yamaganda: fmtPeriod(raw.yamagandaKalam),
@@ -190,6 +199,12 @@ export interface PanchangData {
   sunset: string;
   moonrise: string;
   moonset: string;
+  sunEvents?: {
+    sunrise?: Date | null;
+    sunset?: Date | null;
+    moonrise?: Date | null;
+    moonset?: Date | null;
+  };
   tithi: string;
   nakshatra: string;
   yoga: string;
@@ -231,6 +246,7 @@ export function getPanchang(date: Date, lat: number, lon: number): PanchangData 
     sunset: raw.times.sunset ?? '',
     moonrise: raw.times.moonrise ?? '',
     moonset: raw.times.moonset ?? '',
+    sunEvents: raw.dayEvents,
     tithi: raw.tithi.name,
     nakshatra: raw.nakshatra.name,
     yoga: raw.yoga.name,

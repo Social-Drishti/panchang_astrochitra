@@ -105,7 +105,7 @@ export default function RasiChart({
   houseData: externalHouseData,
   ascendantSign = 1,
   highlightPlanet,
-  showHeader = true,
+  showHeader = false,
   transitMode,
   size = 300,
   planetDisplay = 'icons',

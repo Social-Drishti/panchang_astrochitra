@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['fonts/*.woff2', 'icons/*.png', 'icons/*.svg', 'bg-body.webp', 'new_icon.svg'],
+      includeAssets: ['icons/*.png', 'bg-body.webp'],
       manifest: {
         id: '/',
         name: 'Panchang Astrochitra',

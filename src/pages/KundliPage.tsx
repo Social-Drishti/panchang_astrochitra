@@ -86,16 +86,16 @@ export default function KundliPage({ onClose }: KundliPageProps) {
   const handleGenerate = () => {
     setError(null);
     if (!place) {
-      setError('Please select a place of birth');
+      setError(tr('errSelectPlace'));
       return;
     }
     if (!date || !time) {
-      setError('Please enter a valid date and time of birth');
+      setError(tr('errValidBirth'));
       return;
     }
     try {
       const bd: BirthDetails = {
-        name: name.trim() || 'Person',
+        name: name.trim() || tr('person'),
         date,
         time,
         timezone,
@@ -114,7 +114,7 @@ export default function KundliPage({ onClose }: KundliPageProps) {
         longitude: bd.longitude,
       }));
     } catch (e: any) {
-      setError(e?.message || 'Failed to generate kundli');
+      setError(e?.message || tr('errGenerate'));
       setNewView(null);
       setNewViewId(null);
     }
@@ -151,18 +151,18 @@ export default function KundliPage({ onClose }: KundliPageProps) {
   };
 
   const L = {
-    newKundli: 'New Kundli',
-    savedKundlis: 'Saved Kundlis',
-    name: 'Name',
-    dob: 'Date of Birth',
-    tob: 'Time of Birth',
-    tz: 'Timezone',
-    place: 'Place',
-    generate: 'Generate Kundli',
-    backToForm: '← New adjustments',
-    backToList: '← Back to list',
-    savedListTitle: 'Saved Kundlis',
-    empty: 'No saved kundlis yet. Generate a new kundli and save it to store it here.',
+    newKundli: tr('newKundli'),
+    savedKundlis: tr('savedKundlis'),
+    name: tr('name'),
+    dob: tr('dateOfBirth'),
+    tob: tr('timeOfBirth'),
+    tz: tr('timezone'),
+    place: tr('place'),
+    generate: tr('generateKundli'),
+    backToForm: tr('newAdjustments'),
+    backToList: tr('backToList'),
+    savedListTitle: tr('savedKundlis'),
+    empty: tr('emptySaved'),
   };
 
   const renderTabs = () => (
@@ -179,7 +179,7 @@ export default function KundliPage({ onClose }: KundliPageProps) {
         </button>
       </div>
       {onClose && (
-        <button onClick={onClose} className="k-tab-close" aria-label="Close">
+        <button onClick={onClose} className="k-tab-close" aria-label={tr('close')}>
           <MdClose size={20} />
         </button>
       )}
@@ -195,7 +195,7 @@ export default function KundliPage({ onClose }: KundliPageProps) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <label style={{ fontSize: '12px', color: 'var(--card-text-3)' }}>{L.name}</label>
-          <input value={name} onChange={e => setName(e.target.value)} placeholder="Enter name" style={{ borderRadius: '8px', padding: '10px 12px', background: '#fff' }} />
+          <input value={name} onChange={e => setName(e.target.value)} placeholder={tr('enterName')} style={{ borderRadius: '8px', padding: '10px 12px', background: 'var(--bg-card)' }} />
         </div>
         <BirthDateTimeFields
           dob={dob}
@@ -209,7 +209,7 @@ export default function KundliPage({ onClose }: KundliPageProps) {
         />
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <label style={{ fontSize: '12px', color: 'var(--card-text-3)' }}>{L.tz}</label>
-          <select value={timezone} onChange={e => setTimezone(parseFloat(e.target.value))} style={{ borderRadius: '8px', padding: '10px 12px', background: '#fff' }}>
+          <select value={timezone} onChange={e => setTimezone(parseFloat(e.target.value))} style={{ borderRadius: '8px', padding: '10px 12px', background: 'var(--bg-card)' }}>
             {TIMEZONES.map(tz => (
               <option key={tz.value} value={tz.value}>{tz.label}</option>
             ))}
@@ -253,11 +253,11 @@ export default function KundliPage({ onClose }: KundliPageProps) {
                     {k.localDateTime} · {k.placeName}
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
-                    <span className="chip chip-gold" style={{ fontSize: '11px' }}>Lagna {k.ascendantRashiName}</span>
-                    <span className="chip chip-neutral" style={{ fontSize: '11px' }}>Moon {k.moonSignName}</span>
+                    <span className="chip chip-gold" style={{ fontSize: '11px' }}>{tr('ascendant')} {k.ascendantRashiName}</span>
+                    <span className="chip chip-neutral" style={{ fontSize: '11px' }}>{tr('moonSign')} {k.moonSignName}</span>
                     {k.dasha.currentMaha && (
                       <span className="chip chip-good" style={{ fontSize: '11px' }}>
-                        MD: {k.dasha.currentMaha.lord}
+                        {tr('mahadasha')} {k.dasha.currentMaha.lord}
                       </span>
                     )}
                   </div>
@@ -265,7 +265,7 @@ export default function KundliPage({ onClose }: KundliPageProps) {
                 <button
                   onClick={() => handleDelete(savedId)}
                   style={{ color: '#ff8a80', padding: '8px', flexShrink: 0, display: 'flex' }}
-                  aria-label="Delete"
+                  aria-label={tr('delete')}
                 >
                   <MdDelete size={22} />
                 </button>

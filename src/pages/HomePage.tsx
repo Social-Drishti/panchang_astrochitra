@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '../i18n';
 import { useApp } from '../context/AppContext';
 import { useNavigation } from '../App';
 import { getPanchang, type PanchangData } from '../lib/panchang';
+import { computeSky, getMoonGeometry, type SkyState, type SkyEventTimes } from '../lib/dayPhase';
+import SkyScene from '../components/SkyScene';
 import {
   MdMenu,
   MdWbSunny,
@@ -21,7 +23,12 @@ interface HomePageProps {
   onOpenMenu: () => void;
 }
 
-const SUN_RAYS = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
+const PHASE_OVERRIDES: Record<'dawn' | 'day' | 'dusk' | 'night', SkyState> = {
+  dawn: { phase: 'dawn', dayness: 0.5, twilight: 1, sunHeight: 0.16, sunVisibility: 1, moonVisibility: 0.3 },
+  day: { phase: 'day', dayness: 1, twilight: 0, sunHeight: 0.85, sunVisibility: 1, moonVisibility: 0 },
+  dusk: { phase: 'dusk', dayness: 0.42, twilight: 1, sunHeight: 0.3, sunVisibility: 1, moonVisibility: 0.3 },
+  night: { phase: 'night', dayness: 0, twilight: 0, sunHeight: 0, sunVisibility: 0, moonVisibility: 1 },
+};
 
 const HomePage: React.FC<HomePageProps> = ({ onOpenMenu }) => {
   const { lang, location, selectedDate } = useApp();
@@ -33,6 +40,39 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenMenu }) => {
     const d = new Date(selectedDate + 'T00:00:00');
     setGlance(getPanchang(d, location.lat, location.lon));
   }, [selectedDate, location]);
+
+  const [now, setNow] = useState<number>(() => Date.now());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60_000);
+    const onVisible = () => setNow(Date.now());
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, []);
+
+  const todayEvents = useMemo<SkyEventTimes | null>(() => {
+    try {
+      const p = getPanchang(new Date(), location.lat, location.lon);
+      if (p.sunEvents?.sunrise && p.sunEvents?.sunset) {
+        return { sunrise: p.sunEvents.sunrise, sunset: p.sunEvents.sunset };
+      }
+    } catch { /* fall back to device-clock bands */ }
+    return null;
+  }, [location]);
+
+  const skyState = useMemo<SkyState>(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ov = params.get('phase');
+    if (ov === 'dawn' || ov === 'day' || ov === 'dusk' || ov === 'night') {
+      return PHASE_OVERRIDES[ov];
+    }
+    return computeSky(now, todayEvents);
+  }, [now, todayEvents]);
+
+  const moon = useMemo(() => getMoonGeometry(now), [now]);
 
   const shortDate = new Date(selectedDate + 'T00:00:00').toLocaleDateString(
     lang === 'hi' ? 'hi-IN' : lang === 'mr' ? 'mr-IN' : 'en-IN',
@@ -80,15 +120,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenMenu }) => {
   return (
     <div className="home-page">
       <div className="home-hero">
-        <div className="hero-sun" aria-hidden="true">
-          <svg viewBox="0 0 200 200" width="160" height="160">
-            <circle cx="100" cy="100" r="46" fill="rgba(255, 233, 184, 0.92)" />
-            <circle cx="100" cy="100" r="68" fill="none" stroke="rgba(255, 233, 184, 0.35)" strokeWidth="2" strokeDasharray="3 7" />
-            {SUN_RAYS.map((a) => (
-              <rect key={a} x="97" y="6" width="6" height="22" rx="3" fill="rgba(255, 233, 184, 0.6)" transform={`rotate(${a} 100 100)`} />
-            ))}
-          </svg>
-        </div>
+        <SkyScene state={skyState} moon={moon} />
 
         <div className="hero-top">
           <button className="hero-menu-btn" onClick={onOpenMenu} aria-label="Menu">
