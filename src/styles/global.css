@@ -1,27 +1,36 @@
+/* Self-hosted fonts (offline-safe). Browsed subsets only. */
+@font-face { font-family:'Bricolage Grotesque'; font-style:normal; font-weight:400; font-display:swap; src:url('/fonts/BG-400.woff2') format('woff2'); }
+@font-face { font-family:'Bricolage Grotesque'; font-style:normal; font-weight:500; font-display:swap; src:url('/fonts/BG-500.woff2') format('woff2'); }
+@font-face { font-family:'Bricolage Grotesque'; font-style:normal; font-weight:600; font-display:swap; src:url('/fonts/BG-600.woff2') format('woff2'); }
+@font-face { font-family:'Bricolage Grotesque'; font-style:normal; font-weight:700; font-display:swap; src:url('/fonts/BG-700.woff2') format('woff2'); }
+
+@font-face { font-family:'Anek Devanagari'; font-style:normal; font-weight:100 800; font-display:swap; src:url('/fonts/AnekDevanagari-latin.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family:'Anek Devanagari'; font-style:normal; font-weight:100 800; font-display:swap; src:url('/fonts/AnekDevanagari-devanagari.woff2') format('woff2'); unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B09; }
+
 :root {
-  --bg: #f5e6c8;
-  --bg-card: #fcf3e0;
-  --bg-nav: #3d2e0a;
-  --olive: #654e12;
-  --gold: #c9a227;
-  --gold-light: #e8d48b;
-  --text: #2c1f04;
-  --text-secondary: #7a6530;
-  --text-muted: #9e8b5a;
-  --border: #d4bf8a;
+  --bg: #f6f2ea;
+  --bg-card: #ffffff;
+  --bg-nav: #ffffff;
+  --olive: #8e2a1c;
+  --gold: #c2410c;
+  --gold-light: #f7c9a0;
+  --text: #241d14;
+  --text-secondary: #6b6253;
+  --text-muted: #a09886;
+  --border: #e7e0d3;
   --danger: #b33a3a;
   --success: #3a7b3a;
-  --font-body: 'Saira', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  --font-deco: 'Bebas Neue', 'Arial Narrow', sans-serif;
+  --font-body: 'Anek Devanagari', system-ui, -apple-system, sans-serif;
+  --font-deco: 'Bricolage Grotesque', 'Anek Devanagari', sans-serif;
   --nav-height: 64px;
   --header-height: 56px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --card-grad: linear-gradient(135deg, #6b4423 0%, #543212 100%);
-  --card-text: #fff6e6;
-  --card-text-2: rgba(255, 246, 230, 0.78);
-  --card-text-3: rgba(255, 246, 230, 0.55);
-  --card-line: rgba(255, 246, 230, 0.16);
-  --card-gold: #ffd98a;
+  --card-grad: #ffffff;
+  --card-text: #241d14;
+  --card-text-2: #6b6253;
+  --card-text-3: #a09886;
+  --card-line: #ede6d8;
+  --card-gold: #8e2a1c;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
