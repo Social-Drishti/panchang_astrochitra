@@ -1,7 +1,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { useI18n, type Lang } from './i18n';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { MdHome, MdAccessTime, MdCalendarToday, MdCompareArrows, MdPerson, MdMenu, MdLanguage, MdMyLocation, MdLocationOn } from 'react-icons/md';
 import { locations } from './lib/locations';
 
@@ -42,7 +42,7 @@ function LocationBar() {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: '6px',
-      padding: '6px 12px', background: 'rgba(245, 230, 200, 0.85)',
+      padding: '6px 12px', background: '#fbf7f0',
       borderBottom: '1px solid var(--border)', flexShrink: 0,
       minHeight: '36px',
     }}>
@@ -125,6 +125,7 @@ function AppShell() {
   ];
 
   return (
+    <MotionConfig reducedMotion="user">
     <NavContext.Provider value={{ navigate, currentPage: page }}>
       <>
         <AnimatePresence>
@@ -153,7 +154,7 @@ function AppShell() {
         <header className="header">
           <div className="header-left">
             <button onClick={() => setDrawerOpen(true)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40 }}>
-              <MdMenu size={24} color="var(--gold-light)" />
+              <MdMenu size={24} color="var(--olive)" />
             </button>
           </div>
           <div className="header-brand">Panchang</div>
@@ -263,6 +264,7 @@ function AppShell() {
       </AnimatePresence>
       </>
     </NavContext.Provider>
+    </MotionConfig>
   );
 }
 
