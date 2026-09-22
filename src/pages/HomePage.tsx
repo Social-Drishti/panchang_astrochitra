@@ -5,18 +5,26 @@ import { useNavigation } from '../App';
 import { getPanchang, type PanchangData } from '../lib/panchang';
 import { computeSky, getMoonGeometry, type SkyState, type SkyEventTimes } from '../lib/dayPhase';
 import SkyScene from '../components/SkyScene';
+import type { Page } from '../lib/navigation';
 import {
   MdMenu,
   MdWbSunny,
   MdAccessTime,
   MdPublic,
   MdPerson,
+  MdPersonOutline,
   MdFavorite,
   MdCalendarToday,
   MdLocationOn,
   MdChevronRight,
-  MdArrowForward,
-  MdAutoAwesome,
+  MdArrowOutward,
+  MdStar,
+  MdMail,
+  MdBook,
+  MdInsights,
+  MdCalculate,
+  MdForum,
+  MdSupportAgent,
 } from 'react-icons/md';
 
 interface HomePageProps {
@@ -29,6 +37,14 @@ const PHASE_OVERRIDES: Record<'dawn' | 'day' | 'dusk' | 'night', SkyState> = {
   dusk: { phase: 'dusk', dayness: 0.42, twilight: 1, sunHeight: 0.3, sunVisibility: 1, moonVisibility: 0.3 },
   night: { phase: 'night', dayness: 0, twilight: 0, sunHeight: 0, sunVisibility: 0, moonVisibility: 1 },
 };
+
+interface RowItem {
+  key: Page;
+  cls: string;
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+}
 
 const HomePage: React.FC<HomePageProps> = ({ onOpenMenu }) => {
   const { lang, location, selectedDate } = useApp();
@@ -79,43 +95,47 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenMenu }) => {
     { weekday: 'short', day: 'numeric', month: 'short' }
   );
 
-  const features = [
+  const sections: { num: string; title: string; items: RowItem[] }[] = [
     {
-      cls: 'fc-panchang',
-      icon: <MdWbSunny />,
-      title: 'dailyPanchang',
-      desc: 'dailyPanchangDesc',
-      onClick: () => navigate('panchang'),
+      num: '02',
+      title: tr('essentials'),
+      items: [
+        { key: 'panchang', cls: 'fc-panchang', icon: <MdWbSunny />, title: tr('dailyPanchang'), desc: tr('dailyPanchangDesc') },
+        { key: 'muhurta', cls: 'fc-muhurta', icon: <MdAccessTime />, title: tr('muhurta'), desc: tr('muhurtaDesc') },
+        { key: 'gochar', cls: 'fc-gochar', icon: <MdPublic />, title: tr('gochar'), desc: tr('gocharDesc') },
+      ],
     },
     {
-      cls: 'fc-muhurta',
-      icon: <MdAccessTime />,
-      title: 'muhurta',
-      desc: 'muhurtaDesc',
-      onClick: () => navigate('muhurta'),
+      num: '03',
+      title: tr('readingRoom'),
+      items: [
+        { key: 'dailyRashifal', cls: 'fc-rashifal', icon: <MdStar />, title: tr('dailyRashifal'), desc: tr('dailyRashifalDesc') },
+        { key: 'monthlyNewsletters', cls: 'fc-newsletter', icon: <MdMail />, title: tr('monthlyNewsletters'), desc: tr('monthlyNewslettersDesc') },
+        { key: 'journal', cls: 'fc-journal', icon: <MdBook />, title: tr('journal'), desc: tr('journalDesc') },
+        { key: 'insights', cls: 'fc-insights', icon: <MdInsights />, title: tr('insights'), desc: tr('insightsDesc') },
+      ],
     },
     {
-      cls: 'fc-gochar',
-      icon: <MdPublic />,
-      title: 'gochar',
-      desc: 'gocharDesc',
-      onClick: () => navigate('gochar'),
+      num: '04',
+      title: tr('vedicServices'),
+      items: [
+        { key: 'kundli', cls: 'fc-kundli', icon: <MdPerson />, title: tr('kundliCreation'), desc: tr('kundliCreationDesc') },
+        { key: 'matchmaking', cls: 'fc-match', icon: <MdFavorite />, title: tr('matchmaking'), desc: tr('matchmakingDesc') },
+        { key: 'mulankFinder', cls: 'fc-mulank', icon: <MdCalculate />, title: tr('mulankFinder'), desc: tr('mulankFinderDesc') },
+        { key: 'askGuruji', cls: 'fc-guruji', icon: <MdForum />, title: tr('askGuruji'), desc: tr('askGurujiDesc') },
+      ],
     },
     {
-      cls: 'fc-saved',
-      icon: <MdFavorite />,
-      title: 'savedCharts',
-      desc: 'savedChartsDesc',
-      onClick: () => navigate('kundli'),
-    },
-    {
-      cls: 'fc-kundli fc-wide',
-      icon: <MdPerson />,
-      title: 'kundliCreation',
-      desc: 'kundliCreationDesc',
-      onClick: () => navigate('kundli'),
+      num: '05',
+      title: tr('planAhead'),
+      items: [
+        { key: 'calendar', cls: 'fc-calendar', icon: <MdCalendarToday />, title: tr('calendar'), desc: tr('calendarDesc') },
+        { key: 'consultation', cls: 'fc-consult', icon: <MdSupportAgent />, title: tr('consultation'), desc: tr('consultationDesc') },
+      ],
     },
   ];
+
+  let rowIndex = 1;
 
   return (
     <div className="home-page">
@@ -126,7 +146,9 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenMenu }) => {
           <button className="hero-menu-btn" onClick={onOpenMenu} aria-label="Menu">
             <MdMenu size={22} />
           </button>
-          <img src="/icons/icon-96x96.png" alt="Panchang" className="hero-logo" />
+          <button className="hero-user-btn" onClick={() => navigate('account')} aria-label={tr('account')}>
+            <MdPersonOutline size={22} />
+          </button>
         </div>
 
         <h1 className="hero-title">{tr('appName')}</h1>
@@ -145,61 +167,77 @@ const HomePage: React.FC<HomePageProps> = ({ onOpenMenu }) => {
       </div>
 
       <div className="home-content">
-        <button className="today-card" onClick={() => navigate('panchang')}>
-          <div className="today-header">
-            <span className="today-label">
-              <MdAutoAwesome size={17} />
-              {tr('todayPanchang')}
-            </span>
-            <MdChevronRight size={22} />
+        <section className="ed-section">
+          <div className="ed-head">
+            <span className="ed-num">01</span>
+            <h2 className="ed-title">{tr('today')}</h2>
+            <span className="ed-line" />
           </div>
 
-          {glance ? (
-            <div className="today-grid">
-              <div className="today-item">
-                <span className="t-label">{tr('tithi')}</span>
-                <span className="t-value">{glance.tithi}</span>
-              </div>
-              <div className="today-item">
-                <span className="t-label">{tr('nakshatra')}</span>
-                <span className="t-value">{glance.nakshatra}</span>
-              </div>
-              <div className="today-item">
-                <span className="t-label">{tr('sunrise')}</span>
-                <span className="t-value">{glance.sunrise || '--:--'}</span>
-              </div>
-              <div className="today-item">
-                <span className="t-label">{tr('sunset')}</span>
-                <span className="t-value">{glance.sunset || '--:--'}</span>
-              </div>
+          <button className="today-card" onClick={() => navigate('panchang')}>
+            <div className="today-header">
+              <span className="today-label">
+                <MdWbSunny size={17} />
+                {tr('todayPanchang')}
+              </span>
+              <MdChevronRight size={22} />
             </div>
-          ) : (
-            <div className="today-grid">
-              {[0, 1, 2, 3].map((i) => (
-                <div key={i} className="today-item shimmer" style={{ height: 36, borderRadius: 10 }} />
-              ))}
-            </div>
-          )}
-        </button>
 
-        <section className="features">
-          <div className="features-head">
-            <h2>{tr('features')}</h2>
-          </div>
-          <div className="feature-grid">
-            {features.map((f) => (
-              <button key={f.title} className={`feature-card ${f.cls}`} onClick={f.onClick}>
-                <span className="fc-icon">{f.icon}</span>
-                <h3>{tr(f.title)}</h3>
-                <p>{tr(f.desc)}</p>
-                <span className="fc-foot">
-                  {tr('explore')}
-                  <MdArrowForward size={15} />
-                </span>
-              </button>
-            ))}
-          </div>
+            {glance ? (
+              <div className="today-grid">
+                <div className="today-item">
+                  <span className="t-label">{tr('tithi')}</span>
+                  <span className="t-value">{glance.tithi}</span>
+                </div>
+                <div className="today-item">
+                  <span className="t-label">{tr('nakshatra')}</span>
+                  <span className="t-value">{glance.nakshatra}</span>
+                </div>
+                <div className="today-item">
+                  <span className="t-label">{tr('sunrise')}</span>
+                  <span className="t-value">{glance.sunrise || '--:--'}</span>
+                </div>
+                <div className="today-item">
+                  <span className="t-label">{tr('sunset')}</span>
+                  <span className="t-value">{glance.sunset || '--:--'}</span>
+                </div>
+              </div>
+            ) : (
+              <div className="today-grid">
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i} className="today-item shimmer" style={{ height: 36, borderRadius: 10 }} />
+                ))}
+              </div>
+            )}
+          </button>
         </section>
+
+        {sections.map(section => (
+          <section key={section.num} className="ed-section">
+            <div className="ed-head">
+              <span className="ed-num">{section.num}</span>
+              <h2 className="ed-title">{section.title}</h2>
+              <span className="ed-line" />
+            </div>
+
+            <div className="ed-list">
+              {section.items.map(item => {
+                const idx = String(++rowIndex).padStart(2, '0');
+                return (
+                  <button key={item.key} className={`feature-card fc-row ${item.cls}`} onClick={() => navigate(item.key)}>
+                    <span className="fc-index">{idx}</span>
+                    <span className="fc-icon">{item.icon}</span>
+                    <span className="fc-body">
+                      <h3>{item.title}</h3>
+                      <p>{item.desc}</p>
+                    </span>
+                    <MdArrowOutward className="fc-arrow" />
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        ))}
       </div>
     </div>
   );

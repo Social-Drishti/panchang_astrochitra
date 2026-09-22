@@ -63,6 +63,7 @@ export function saveKundli(input: SavedKundliInput): SavedKundli {
   if (existing >= 0) list[existing] = entry;
   else list.unshift(entry);
   persist(list);
+  void import('./backend').then(({ syncKundli }) => syncKundli(entry));
   return entry;
 }
 

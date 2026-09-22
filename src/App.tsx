@@ -2,25 +2,28 @@ import { useState, useEffect, createContext, useContext, ReactNode } from 'react
 import { AppProvider, useApp } from './context/AppContext';
 import { useI18n, type Lang } from './i18n';
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
-import { MdHome, MdAccessTime, MdCalendarToday, MdCompareArrows, MdPerson, MdMenu, MdLanguage, MdMyLocation, MdLocationOn } from 'react-icons/md';
+import { MdMenu, MdLanguage, MdMyLocation, MdLocationOn, MdPersonOutline } from 'react-icons/md';
 import { locations } from './lib/locations';
+import { PAGE_ICONS, BOTTOM_NAV, groupForPage, type Page } from './lib/navigation';
 
 import HomePage from './pages/HomePage';
 import PanchangPage from './pages/PanchangPage';
 import MuhurtaPage from './pages/MuhurtaPage';
 import GocharPage from './pages/GocharPage';
 import KundliPage from './pages/KundliPage';
+import CalendarPage from './pages/CalendarPage';
+import JournalPage from './pages/JournalPage';
+import DailyRashifalPage from './pages/DailyRashifalPage';
+import MonthlyNewslettersPage from './pages/MonthlyNewslettersPage';
+import InsightsPage from './pages/InsightsPage';
+import MatchmakingPage from './pages/MatchmakingPage';
+import MulankFinderPage from './pages/MulankFinderPage';
+import AskGurujiPage from './pages/AskGurujiPage';
+import AccountPage from './pages/AccountPage';
+import ConsultationPage from './pages/ConsultationPage';
+import StorePage from './pages/StorePage';
+import TopMenu from './components/TopMenu';
 import PWAInstallManager from './components/PWAInstallManager';
-
-type Page = 'home' | 'panchang' | 'muhurta' | 'gochar' | 'kundli';
-
-const NAV_ITEMS: { key: Page; labelEn: string; icon: React.ReactNode }[] = [
-  { key: 'home', labelEn: 'Home', icon: <MdHome /> },
-  { key: 'panchang', labelEn: 'Panchang', icon: <MdCalendarToday /> },
-  { key: 'muhurta', labelEn: 'Muhurta', icon: <MdAccessTime /> },
-  { key: 'gochar', labelEn: 'Gochar', icon: <MdCompareArrows /> },
-  { key: 'kundli', labelEn: 'Kundli', icon: <MdPerson /> },
-];
 
 interface NavContextType {
   navigate: (page: Page) => void;
@@ -104,19 +107,29 @@ function AppShell() {
       case 'muhurta': return <MuhurtaPage />;
       case 'gochar': return <GocharPage />;
       case 'kundli': return <KundliPage />;
+      case 'calendar': return <CalendarPage />;
+      case 'journal': return <JournalPage />;
+      case 'dailyRashifal': return <DailyRashifalPage />;
+      case 'monthlyNewsletters': return <MonthlyNewslettersPage />;
+      case 'insights': return <InsightsPage />;
+      case 'matchmaking': return <MatchmakingPage />;
+      case 'mulankFinder': return <MulankFinderPage />;
+      case 'askGuruji': return <AskGurujiPage />;
+      case 'account': return <AccountPage />;
+      case 'consultation': return <ConsultationPage />;
+      case 'store': return <StorePage />;
     }
   };
 
-  const navLabel = (key: Page) => {
-    const map: Record<Page, string> = {
-      home: tr('home'),
-      panchang: tr('panchang'),
-      muhurta: tr('muhurta'),
-      gochar: tr('gochar'),
-      kundli: tr('kundli'),
-    };
-    return map[key] ?? key;
-  };
+  const group = groupForPage(page);
+
+  const topMenu = group ? (
+    <TopMenu
+      items={group.items.map(i => ({ key: i.key, label: tr(i.key), icon: PAGE_ICONS[i.key] }))}
+      active={page}
+      onSelect={(key) => navigate(key as Page)}
+    />
+  ) : null;
 
   const languages: { key: Lang; label: string }[] = [
     { key: 'en', label: 'English' },
@@ -158,13 +171,19 @@ function AppShell() {
             </button>
           </div>
           <div className="header-brand">Panchang</div>
-          <div className="header-right" />
+          <div className="header-right">
+            <button onClick={() => navigate('account')} className="header-user-btn" aria-label={tr('account')}>
+              <MdPersonOutline size={22} color="var(--olive)" />
+            </button>
+          </div>
         </header>
       )}
 
-      {page !== 'kundli' && page !== 'home' && <LocationBar />}
+      {page !== 'kundli' && page !== 'home' && page !== 'account' && <LocationBar />}
 
       <main className="main-content">
+        {page !== 'home' && topMenu}
+
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={page}
@@ -180,21 +199,21 @@ function AppShell() {
       </main>
 
       <nav className="bottom-nav">
-        {NAV_ITEMS.map(item => (
+        {BOTTOM_NAV.map(itemKey => (
           <button
-            key={item.key}
-            className={`nav-item ${page === item.key ? 'active' : ''}`}
-            onClick={() => navigate(item.key)}
+            key={itemKey}
+            className={`nav-item ${page === itemKey ? 'active' : ''}`}
+            onClick={() => navigate(itemKey)}
           >
             <motion.div
               className="nav-active-pill"
               layoutId="nav-pill"
               initial={false}
               transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-              style={{ opacity: page === item.key ? 1 : 0 }}
+              style={{ opacity: page === itemKey ? 1 : 0 }}
             />
-            {item.icon}
-            <span>{navLabel(item.key)}</span>
+            {PAGE_ICONS[itemKey]}
+            <span>{tr(itemKey)}</span>
           </button>
         ))}
       </nav>

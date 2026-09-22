@@ -67,6 +67,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/explabs/, ''),
       },
+      // Panchang PHP backend (server/). Run it with `.\server\start.ps1`.
+      '/api/v1': {
+        target: 'http://localhost:1212',
+        changeOrigin: true,
+      },
     },
   },
 });

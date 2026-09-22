@@ -255,7 +255,20 @@ export default function RasiChart({
           const isAsc = house.houseNumber === 1;
 
           return (
-            <g key={`content-${house.houseNumber}`} style={{ pointerEvents: 'none' }}>
+            <>
+              {onHouseClick && (
+                <path
+                  key={`hit-${house.houseNumber}`}
+                  d={NORTH_PATHS[house.houseNumber]}
+                  fill={house.houseNumber === selectedHouse ? 'rgba(245,166,35,0.18)' : 'transparent'}
+                  stroke={house.houseNumber === selectedHouse ? ACCENT : undefined}
+                  strokeWidth={1.5}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => onHouseClick(house.houseNumber)}
+                />
+              )}
+
+              <g key={`content-${house.houseNumber}`} style={{ pointerEvents: 'none' }}>
               {/* Sign icon */}
               {house.signSymbol && (
                 <image
@@ -368,6 +381,7 @@ export default function RasiChart({
                 </>
               )}
             </g>
+            </>
           );
         })}
       </svg>
