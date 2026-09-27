@@ -5,3 +5,6 @@ node_modules
 
 # PHP backend
 server/data/
+
+# Standalone RAG knowledgebase tool; its own repository
+RAG/
