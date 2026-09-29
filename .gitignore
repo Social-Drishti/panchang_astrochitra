@@ -6,6 +6,9 @@ node_modules
 # Local secrets reference (contains real GitHub secret values)
 SECRETS.md
 
+# Local SSH helper (tools only, not for the repo)
+ssh_helper.py
+
 # PHP backend
 server/data/
 
