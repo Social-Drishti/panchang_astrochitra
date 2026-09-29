@@ -3,6 +3,9 @@ node_modules
 .env.local
 .env.*.local
 
+# Local secrets reference (contains real GitHub secret values)
+SECRETS.md
+
 # PHP backend
 server/data/
 

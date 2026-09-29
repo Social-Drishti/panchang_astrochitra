@@ -37,13 +37,19 @@ sudo chmod 775 "$APP_DIR/server/data"
 
 echo "[3/8] Installing deps and building PWA..."
 npm ci --include=dev --loglevel=error
-cat > "$APP_DIR/.env.local" <<ENVEOF
+if [ -n "${APP_ENV:-}" ]; then
+  printf '%s\n' "$APP_ENV" > "$APP_DIR/.env.local"
+  echo "  wrote .env.local from APP_ENV ($(wc -l < "$APP_DIR/.env.local") lines)"
+else
+  cat > "$APP_DIR/.env.local" <<ENVEOF
 VITE_GEMINI_API_KEY=${VITE_GEMINI_API_KEY:-}
 VITE_DEEPSEEK_API_KEY=${VITE_DEEPSEEK_API_KEY:-}
 VITE_EXPLABS_API_KEY=${VITE_EXPLABS_API_KEY:-}
 VITE_EXPLABS_PROXY=${VITE_EXPLABS_PROXY:-/api/explabs}
 VITE_API_BASE=${VITE_API_BASE:-/api/v1}
 ENVEOF
+  echo "  wrote .env.local from legacy per-var secrets"
+fi
 npm run build
 
 echo "[4/8] Syncing SQLite schema..."
