@@ -1,5 +1,10 @@
 import { getKundli, Observer, rashiNames, nakshatraNames, getAyanamsa } from '@ishubhamx/panchangam-js';
 import * as Astronomy from 'astronomy-engine';
+import { GENERIC_INSIGHTS } from './insights/generic';
+import { getRashiByName, getRashiBySanskritName } from './insights/rashis';
+import { getGrahaByName, getGrahaBySanskritName } from './insights/grahas';
+import { getHouseByNumber } from './insights/houses';
+import { getNakshatraByName } from './insights/nakshatras';
 
 export const ZODIAC = [
   'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio',
@@ -115,12 +120,85 @@ export interface DashaData {
   antarDasas: DashaPeriod[];
 }
 
+export interface InsightRashi {
+  name: string;
+  sanskritName: string;
+  lord: string;
+  element: string;
+  nature: string;
+  represents: string;
+  traits: string;
+  tags?: string[];
+}
+
+export interface InsightNakshatra {
+  name: string;
+  lord: string;
+  gana: string;
+  zodiac: string;
+  traits: string;
+  profession: string;
+  auspicious: string;
+}
+
+export interface InsightHouse {
+  number: number;
+  title: string;
+  sanskrit: string;
+  tags: string[];
+  shortDesc: string;
+  governs: string[];
+  deeper: string;
+}
+
+export interface InsightGraha {
+  name: string;
+  sanskritName: string;
+  represents: string;
+  karakatva: string;
+  traits: string;
+}
+
+export interface AscendantInsights {
+  generic: string;
+  rashi: InsightRashi;
+  nakshatra: InsightNakshatra;
+  house: InsightHouse;
+}
+
+export interface MoonInsights {
+  generic: string;
+  rashi: InsightRashi;
+  nakshatra: InsightNakshatra;
+  karakatva: string;
+}
+
+export interface PlanetInsights {
+  generic: string;
+  graha: InsightGraha;
+  house: InsightHouse;
+  rashi: InsightRashi;
+  nakshatra: InsightNakshatra;
+}
+
+export interface HouseInsights {
+  generic: string;
+  house: InsightHouse;
+}
+
+export interface KundliInsights {
+  ascendant: AscendantInsights;
+  moon: MoonInsights;
+  planets: Record<string, PlanetInsights>;
+  houses: Record<number, HouseInsights>;
+}
+
 export interface KundliData {
   personName: string;
   utcDateTime: string;
   localDateTime: string;
   placeName: string;
-  ascendantSign: number;          // 1-12
+  ascendantSign: number;
   ascendantSignName: string;
   ascendantRashiName: string;
   lagna: {
@@ -136,6 +214,7 @@ export interface KundliData {
   houses: HouseInfo[];
   dasha: DashaData;
   navamsa: NavamsaData | null;
+  insights: KundliInsights;
 }
 
 export interface NavamsaData {
@@ -357,6 +436,141 @@ function buildNavamsa(r: any): NavamsaData | null {
   };
 }
 
+function buildKundliInsights(data: Omit<KundliData, 'insights'>): KundliInsights {
+  const ascRashi = getRashiByName(data.ascendantSignName) || getRashiBySanskritName(data.ascendantRashiName) || getRashiByName('Aries')!;
+  const ascNakshatra = getNakshatraByName(data.lagna.nakshatraName) || getNakshatraByName('Ashwini')!;
+  const ascHouse = getHouseByNumber(1)!;
+
+  const moonRashi = getRashiByName(data.moonSignName) || getRashiBySanskritName(RASHI_NAME[data.moonSignName] || '') || getRashiByName('Aries')!;
+  const moonNakshatra = getNakshatraByName(data.moonNakshatra) || getNakshatraByName('Ashwini')!;
+  const moonGraha = getGrahaByName('Moon')!;
+
+  const planetInsights: Record<string, PlanetInsights> = {};
+  for (const p of data.planets) {
+    if (p.key === 'Ascendant') continue;
+    const graha = getGrahaByName(p.key) || getGrahaBySanskritName(p.key);
+    const rashi = getRashiByName(p.signName) || getRashiBySanskritName(RASHI_NAME[p.signName] || '');
+    const nakshatra = getNakshatraByName(p.nakshatraName);
+    const house = getHouseByNumber(p.houseNumber);
+
+    if (graha && rashi && nakshatra && house) {
+      planetInsights[p.key] = {
+        generic: GENERIC_INSIGHTS.planet,
+        graha: {
+          name: graha.name,
+          sanskritName: graha.sanskritName,
+          represents: graha.represents,
+          karakatva: graha.karakatva,
+          traits: graha.traits,
+        },
+        house: {
+          number: house.number,
+          title: house.title,
+          sanskrit: house.sanskrit,
+          tags: house.tags,
+          shortDesc: house.shortDesc,
+          governs: house.governs,
+          deeper: house.deeper,
+        },
+        rashi: {
+          name: rashi.name,
+          sanskritName: rashi.sanskritName,
+          lord: rashi.lord,
+          element: rashi.element,
+          nature: rashi.nature,
+          represents: rashi.represents,
+          traits: rashi.traits,
+        },
+        nakshatra: {
+          name: nakshatra.name,
+          lord: nakshatra.lord,
+          gana: nakshatra.gana,
+          zodiac: nakshatra.zodiac,
+          traits: nakshatra.traits,
+          profession: nakshatra.profession,
+          auspicious: nakshatra.auspicious,
+        },
+      };
+    }
+  }
+
+  const houseInsights: Record<number, HouseInsights> = {};
+  for (const h of data.houses) {
+    const house = getHouseByNumber(h.houseNumber);
+    if (house) {
+      houseInsights[h.houseNumber] = {
+        generic: GENERIC_INSIGHTS.house,
+        house: {
+          number: house.number,
+          title: house.title,
+          sanskrit: house.sanskrit,
+          tags: house.tags,
+          shortDesc: house.shortDesc,
+          governs: house.governs,
+          deeper: house.deeper,
+        },
+      };
+    }
+  }
+
+  return {
+    ascendant: {
+      generic: GENERIC_INSIGHTS.ascendant,
+      rashi: {
+        name: ascRashi.name,
+        sanskritName: ascRashi.sanskritName,
+        lord: ascRashi.lord,
+        element: ascRashi.element,
+        nature: ascRashi.nature,
+        represents: ascRashi.represents,
+        traits: ascRashi.traits,
+      },
+      nakshatra: {
+        name: ascNakshatra.name,
+        lord: ascNakshatra.lord,
+        gana: ascNakshatra.gana,
+        zodiac: ascNakshatra.zodiac,
+        traits: ascNakshatra.traits,
+        profession: ascNakshatra.profession,
+        auspicious: ascNakshatra.auspicious,
+      },
+      house: {
+        number: ascHouse.number,
+        title: ascHouse.title,
+        sanskrit: ascHouse.sanskrit,
+        tags: ascHouse.tags,
+        shortDesc: ascHouse.shortDesc,
+        governs: ascHouse.governs,
+        deeper: ascHouse.deeper,
+      },
+    },
+    moon: {
+      generic: GENERIC_INSIGHTS.rashi,
+      rashi: {
+        name: moonRashi.name,
+        sanskritName: moonRashi.sanskritName,
+        lord: moonRashi.lord,
+        element: moonRashi.element,
+        nature: moonRashi.nature,
+        represents: moonRashi.represents,
+        traits: moonRashi.traits,
+      },
+      nakshatra: {
+        name: moonNakshatra.name,
+        lord: moonNakshatra.lord,
+        gana: moonNakshatra.gana,
+        zodiac: moonNakshatra.zodiac,
+        traits: moonNakshatra.traits,
+        profession: moonNakshatra.profession,
+        auspicious: moonNakshatra.auspicious,
+      },
+      karakatva: moonGraha.karakatva,
+    },
+    planets: planetInsights,
+    houses: houseInsights,
+  };
+}
+
 /**
  * Generate a full Janam Kundli (birth chart) for a given date/time/place.
  * Follows the same whole-sign house + nakshatra/lord derivation used by
@@ -430,7 +644,7 @@ export function generateKundli(bd: BirthDetails): KundliData {
     `${localDate.getFullYear()}-${pad(localDate.getMonth() + 1)}-${pad(localDate.getDate())} ` +
     `${pad(localDate.getHours())}:${pad(localDate.getMinutes())}`;
 
-  return {
+  const baseData = {
     personName: bd.name,
     utcDateTime: dt.toISOString(),
     localDateTime,
@@ -452,4 +666,8 @@ export function generateKundli(bd: BirthDetails): KundliData {
     dasha,
     navamsa,
   };
+
+  const insights = buildKundliInsights(baseData);
+
+  return { ...baseData, insights };
 }

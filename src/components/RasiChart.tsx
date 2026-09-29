@@ -78,7 +78,6 @@ const FILL_LIGHT = '#fbf7f0';
 const ACCENT = '#8e2a1c';
 const TEXT_MUTED = '#6b6253';
 
-// All coordinates in 300x300 viewBox space
 const NORTH_PATHS: Record<number, string> = {
   1: 'M 150 0 L 225 75 L 150 150 L 75 75 Z',
   2: 'M 0 0 L 150 0 L 75 75 Z',
@@ -174,7 +173,6 @@ export default function RasiChart({
         viewBox="0 0 300 300"
         style={{
           width: '100%',
-          // maxWidth: `${size}px`,
           height: 'auto',
           background: `linear-gradient(135deg, ${bgFrom} 0%, ${bgTo} 100%)`,
           border: hairlineBorder
@@ -263,7 +261,7 @@ export default function RasiChart({
           const signNumX = showIcons ? center.x + iconSize / 2 + 2 : center.x;
 
           return (
-            <>
+            <g key={`house-${house.houseNumber}`}>
               {onHouseClick && (
                 <path
                   key={`hit-${house.houseNumber}`}
@@ -374,22 +372,22 @@ export default function RasiChart({
                           x={center.x + offX} y={pY}
                           textAnchor="middle" dominantBaseline="middle"
                           fill={colr}
-                  fontSize={planetFontSize}
-                  fontWeight={isHL ? 900 : 800}
-                  fontFamily="Georgia, serif"
-                  paintOrder={strokeOnText ? 'stroke fill' : undefined}
-                  stroke={strokeOnText ? 'rgba(255,251,230,0.95)' : undefined}
-                  strokeWidth={strokeOnText ? '3px' : undefined}
-                >
-                  {abbr}{retro}
+                          fontSize={planetFontSize}
+                          fontWeight={isHL ? 900 : 800}
+                          fontFamily="Georgia, serif"
+                          paintOrder={strokeOnText ? 'stroke fill' : undefined}
+                          stroke={strokeOnText ? 'rgba(255,251,230,0.95)' : undefined}
+                          strokeWidth={strokeOnText ? '3px' : undefined}
+                        >
+                          {abbr}{retro}
                         </text>
                       </g>
                     );
                   })}
                 </>
               )}
+              </g>
             </g>
-            </>
           );
         })}
       </svg>

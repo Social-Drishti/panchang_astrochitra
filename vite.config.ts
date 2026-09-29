@@ -13,8 +13,6 @@ export default defineConfig({
         name: 'Astrochitra',
         short_name: 'Astrochitra',
         description: 'Daily Vedic Panchang - Tithi, Nakshatra, Muhurta, Graha positions and planetary transits',
-        // '?launch=1' marks a real PWA launch (Android killed the app, so we get
-        // no history). The root URL without it stays a plain homepage.
         start_url: '/?launch=1',
         scope: '/',
         display: 'standalone',
@@ -60,16 +58,18 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      external: ['@/content/languageStore'],
+    },
+  },
   server: {
     proxy: {
-      // ExperientialLabs blocks browser CORS. Route it through the Vite dev
-      // server in dev; the provider falls back to a server-side proxy in prod.
       '/api/explabs': {
         target: 'https://api.experientiallabs.ai',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/explabs/, ''),
       },
-      // Panchang PHP backend (server/). Run it with `.\server\start.ps1`.
       '/api/v1': {
         target: 'http://localhost:1212',
         changeOrigin: true,

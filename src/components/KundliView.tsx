@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import type { KundliData, HouseInfo, PlanetInfo } from '../lib/kundli';
 import { RASHI_NAME, nakshatraAtLongitude } from '../lib/kundli';
 import RasiChart from './RasiChart';
+import KundliInsights from './KundliInsights';
 import { MdSave } from 'react-icons/md';
 import { useApp } from '../context/AppContext';
 import { useI18n } from '../i18n';
@@ -19,7 +20,7 @@ const PLANET_SANS: Record<string, string> = {
 
 const PLANET_ORDER = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu', 'Ascendant'];
 
-function formatDegMin(deg: number): string {
+export function formatDegMin(deg: number): string {
   const d = Math.floor(deg);
   const m = Math.floor((deg - d) * 60);
   return `${d}°${String(m).padStart(2, '0')}′`;
@@ -276,6 +277,7 @@ export default function KundliView({ kundli, saved, onSave, onBack }: KundliView
 
       {navamsaHouseData.houses && (
         <>
+          <KundliInsights data={kundli.insights} kundli={kundli} />
           <div className="card-title" style={{ marginBottom: '8px', marginTop: '12px' }}>{tr('navamsaChart')}</div>
           <RasiChart
             houseData={navamsaHouseData.houses}
