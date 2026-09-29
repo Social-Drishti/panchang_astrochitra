@@ -70,3 +70,42 @@ export function saveKundli(input: SavedKundliInput): SavedKundli {
 export function deleteKundli(id: string): void {
   persist(loadSavedKundlis().filter(e => e.id !== id));
 }
+
+// A generated-but-unsaved chart has no record yet, but the viewer is addressed
+// by id (/kundli/view/:id), so the chart has to be retrievable by something
+// other than React state. One slot, mirroring the single "current result" the
+// page used to hold. sessionStorage so it survives a reload but is dropped with
+// the tab rather than lingering as a stale unsaved chart.
+const DRAFT_KEY = 'pach-kundli-draft';
+
+export interface KundliDraft {
+  id: string;
+  entry: SavedKundliInput;
+}
+
+export function loadDraft(): KundliDraft | null {
+  try {
+    const raw = sessionStorage.getItem(DRAFT_KEY);
+    if (!raw) return null;
+    const d = JSON.parse(raw) as KundliDraft;
+    return d && d.id && d.entry && d.entry.kundli ? d : null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveDraft(id: string, entry: SavedKundliInput): void {
+  try {
+    sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ id, entry }));
+  } catch {
+    // storage unavailable; the chart still renders, it just won't survive reload
+  }
+}
+
+export function clearDraft(): void {
+  try {
+    sessionStorage.removeItem(DRAFT_KEY);
+  } catch {
+    // ignore
+  }
+}

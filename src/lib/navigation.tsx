@@ -102,6 +102,51 @@ export const NAV_GROUPS: NavGroup[] = [
 
 export const BOTTOM_NAV: Page[] = ['home', 'kundli', 'consultation', 'calendar', 'store'];
 
+// Kundli is three screens rather than one page with internal tabs, so the
+// chart viewer is addressable and the back button has something to return to.
+export const KUNDLI_BASE = '/kundli';
+export const KUNDLI_NEW = `${KUNDLI_BASE}/new`;
+export const KUNDLI_SAVED = `${KUNDLI_BASE}/saved`;
+export const KUNDLI_VIEW_BASE = `${KUNDLI_BASE}/view`;
+
+export function kundliViewPath(id: string): string {
+  return `${KUNDLI_VIEW_BASE}/${id}`;
+}
+
+// '/' is deliberately absent: it is the app entry point, not a page. The entry
+// route restores the last visited page and falls back to '/home'.
+export const PAGE_PATHS: Record<Page, string> = {
+  home: '/home',
+  journal: '/journal',
+  dailyRashifal: '/daily-rashifal',
+  monthlyNewsletters: '/monthly-newsletters',
+  insights: '/insights',
+  kundli: KUNDLI_NEW,
+  matchmaking: '/matchmaking',
+  mulankFinder: '/mulank-finder',
+  askGuruji: '/ask-guruji',
+  calendar: '/calendar',
+  panchang: '/panchang',
+  muhurta: '/muhurta',
+  gochar: '/gochar',
+  account: '/account',
+  consultation: '/consultation',
+  store: '/store',
+};
+
+const PATH_TO_PAGE: Record<string, Page> = Object.fromEntries(
+  Object.entries(PAGE_PATHS).map(([page, path]) => [path, page as Page]),
+);
+
+export function pageFromPath(pathname: string): Page | undefined {
+  // Every kundli sub-route stays on the 'kundli' page so the top menu highlight,
+  // the bottom nav and the i18n label keep working across all three screens.
+  // Bare '/kundli' (older bookmarks) is included; KundliRoutes redirects it to
+  // the new-kundli form.
+  if (pathname === KUNDLI_BASE || pathname.startsWith(`${KUNDLI_BASE}/`)) return 'kundli';
+  return PATH_TO_PAGE[pathname];
+}
+
 export function groupForPage(page: Page): NavGroup | undefined {
   return NAV_GROUPS.find(g => g.items.some(i => i.key === page));
 }

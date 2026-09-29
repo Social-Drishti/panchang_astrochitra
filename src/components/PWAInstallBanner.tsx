@@ -49,7 +49,7 @@ export default function PWAInstallBanner({ show, onInstall, onDismiss }: Props) 
               overflow: 'hidden',
               textOverflow: 'ellipsis',
             }}>
-              Install Panchang
+              Install Astrochitra
             </span>
             <button
               onClick={onInstall}

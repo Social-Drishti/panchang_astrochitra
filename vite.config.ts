@@ -10,10 +10,12 @@ export default defineConfig({
       includeAssets: ['icons/*.png', 'bg-body.webp'],
       manifest: {
         id: '/',
-        name: 'Panchang Astrochitra',
-        short_name: 'Panchang',
+        name: 'Astrochitra',
+        short_name: 'Astrochitra',
         description: 'Daily Vedic Panchang - Tithi, Nakshatra, Muhurta, Graha positions and planetary transits',
-        start_url: '/',
+        // '?launch=1' marks a real PWA launch (Android killed the app, so we get
+        // no history). The root URL without it stays a plain homepage.
+        start_url: '/?launch=1',
         scope: '/',
         display: 'standalone',
         display_override: ['window-controls-overlay', 'standalone'],
@@ -36,9 +38,9 @@ export default defineConfig({
         ],
         shortcuts: [
           {
-            name: 'Panchang',
-            short_name: 'Panchang',
-            url: '/',
+            name: 'Astrochitra',
+            short_name: 'Astrochitra',
+            url: '/home',
             icons: [{ src: '/icons/icon-96x96.png', sizes: '96x96' }],
           },
         ],

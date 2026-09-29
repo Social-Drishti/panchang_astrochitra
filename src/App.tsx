@@ -1,16 +1,18 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { BrowserRouter, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import { useI18n, type Lang } from './i18n';
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { MdMenu, MdLanguage, MdMyLocation, MdLocationOn, MdPersonOutline } from 'react-icons/md';
 import { locations } from './lib/locations';
-import { PAGE_ICONS, BOTTOM_NAV, groupForPage, type Page } from './lib/navigation';
+import { PAGE_ICONS, BOTTOM_NAV, groupForPage, pageFromPath, PAGE_PATHS, type Page } from './lib/navigation';
+import { readLastPath, writeLastPath } from './lib/lastPage';
 
 import HomePage from './pages/HomePage';
 import PanchangPage from './pages/PanchangPage';
 import MuhurtaPage from './pages/MuhurtaPage';
 import GocharPage from './pages/GocharPage';
-import KundliPage from './pages/KundliPage';
+import KundliRoutes from './pages/KundliRoutes';
 import CalendarPage from './pages/CalendarPage';
 import JournalPage from './pages/JournalPage';
 import DailyRashifalPage from './pages/DailyRashifalPage';
@@ -86,17 +88,25 @@ function LocationBar() {
 function AppShell() {
   const { lang, setLang, location, setLocation, useGps, setUseGps, gpsLoading, gpsError, isOnline } = useApp();
   const { tr } = useI18n(lang);
-  const [page, setPage] = useState<Page>('home');
+  const routerLocation = useLocation();
+  const routerNavigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [splash, setSplash] = useState(true);
+
+  // Unknown paths (typos, stale links) fall back to Home rather than a blank screen.
+  const page: Page = pageFromPath(routerLocation.pathname) ?? 'home';
 
   useEffect(() => {
     const timer = setTimeout(() => setSplash(false), 1500);
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    if (pageFromPath(routerLocation.pathname)) writeLastPath(routerLocation.pathname);
+  }, [routerLocation.pathname]);
+
   const navigate = (targetPage: Page) => {
-    setPage(targetPage);
+    routerNavigate(PAGE_PATHS[targetPage]);
     setDrawerOpen(false);
   };
 
@@ -106,7 +116,7 @@ function AppShell() {
       case 'panchang': return <PanchangPage />;
       case 'muhurta': return <MuhurtaPage />;
       case 'gochar': return <GocharPage />;
-      case 'kundli': return <KundliPage />;
+      case 'kundli': return <KundliRoutes />;
       case 'calendar': return <CalendarPage />;
       case 'journal': return <JournalPage />;
       case 'dailyRashifal': return <DailyRashifalPage />;
@@ -149,7 +159,7 @@ function AppShell() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <img src="/icons/icon-512x512.png" alt="Panchang" className="splash-logo" />
+            <img src="/icons/icon-512x512.png" alt="Astrochitra" className="splash-logo" />
             <div className="splash-text">{tr('appName')}</div>
           </motion.div>
         )}
@@ -170,7 +180,7 @@ function AppShell() {
               <MdMenu size={24} color="var(--olive)" />
             </button>
           </div>
-          <div className="header-brand">Panchang</div>
+          <div className="header-brand">Astrochitra</div>
           <div className="header-right">
             <button onClick={() => navigate('account')} className="header-user-btn" aria-label={tr('account')}>
               <MdPersonOutline size={22} color="var(--olive)" />
@@ -186,7 +196,7 @@ function AppShell() {
 
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
-            key={page}
+            key={routerLocation.pathname}
             className="page-transition"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -235,7 +245,7 @@ function AppShell() {
               exit={{ x: '-100%' }}
               transition={{ type: 'tween', duration: 0.25 }}
             >
-              <div className="drawer-header">Panchang</div>
+              <div className="drawer-header">Astrochitra</div>
               <div className="drawer-body">
                 <div className="drawer-divider" />
                 <div style={{ fontSize: '13px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
@@ -287,10 +297,30 @@ function AppShell() {
   );
 }
 
+// '/' reaches us two different ways and the two must not be confused:
+//   1. the manifest start_url ('/?launch=1') — a PWA launch, typically after
+//      Android killed the app, so there is no history to restore from.
+//   2. someone typing or bookmarking the root URL, which should just be Home.
+// Both replace, so neither leaves a junk entry to press back into.
+function RoutedAppShell() {
+  const { pathname, search } = useLocation();
+
+  if (pathname === '/') {
+    const isPwaLaunch = new URLSearchParams(search).get('launch') === '1';
+    const lastPath = isPwaLaunch ? readLastPath() : null;
+    const target = lastPath && pageFromPath(lastPath) ? lastPath : PAGE_PATHS.home;
+    return <Navigate to={target} replace />;
+  }
+
+  return <AppShell />;
+}
+
 export default function App() {
   return (
-    <AppProvider>
-      <AppShell />
-    </AppProvider>
+    <BrowserRouter>
+      <AppProvider>
+        <RoutedAppShell />
+      </AppProvider>
+    </BrowserRouter>
   );
 }

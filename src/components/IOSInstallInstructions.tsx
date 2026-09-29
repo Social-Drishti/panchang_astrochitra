@@ -39,7 +39,7 @@ export default function IOSInstallInstructions({ open, onClose }: Props) {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--olive)' }}>
-                Install Panchang
+                Install Astrochitra
               </h3>
               <button onClick={onClose} style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <MdClose size={22} color="var(--text-muted)" />
@@ -87,7 +87,7 @@ export default function IOSInstallInstructions({ open, onClose }: Props) {
                 background: 'var(--bg)', borderRadius: '10px', padding: '12px 16px',
                 fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.5',
               }}>
-                The Panchang app will now appear on your home screen like a native app.
+                The Astrochitra app will now appear on your home screen like a native app.
               </div>
             </div>
           </motion.div>

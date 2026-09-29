@@ -3,7 +3,7 @@ export type Lang = 'en' | 'hi' | 'mr';
 type TranslationMap = Record<string, Record<Lang, string>>;
 
 export const t: TranslationMap = {
-  appName: { en: 'Panchang', hi: '\u092a\u0902\u091a\u093e\u0902\u0917', mr: '\u092a\u0902\u091a\u093e\u0902\u0917' },
+  appName: { en: 'Astrochitra', hi: '\u0906\u0938\u094d\u0925\u094b\u091a\u093f\u0924\u094d\u0930', mr: '\u0906\u0938\u094d\u0925\u094b\u091a\u093f\u0924\u094d\u0930' },
   home: { en: 'Home', hi: '\u0918\u0930', mr: '\u0918\u0930' },
   panchang: { en: 'Panchang', hi: '\u092a\u0902\u091a\u093e\u0902\u0917', mr: '\u092a\u0902\u091a\u093e\u0902\u0917' },
   muhurta: { en: 'Muhurta', hi: '\u092e\u0941\u0939\u0942\u0930\u094d\u0924', mr: '\u092e\u0941\u0939\u0942\u0930\u094d\u0924' },
