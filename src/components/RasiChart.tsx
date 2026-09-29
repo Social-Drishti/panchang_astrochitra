@@ -1,4 +1,4 @@
-﻿import { useMemo } from 'react';
+﻿import { useMemo, useId } from 'react';
 import type { PlanetPositions } from '../lib/panchang';
 
 interface PlanetData {
@@ -27,6 +27,9 @@ interface RasiChartProps {
   hairlineBorder?: boolean;
   size?: number;
   planetDisplay?: 'icons' | 'initials';
+  bgFrom?: string;
+  bgTo?: string;
+  showIcons?: boolean;
 }
 
 const ENGLISH_SIGNS = [
@@ -116,8 +119,12 @@ export default function RasiChart({
   onHouseClick,
   strokeOnText = true,
   hairlineBorder = false,
-  planetDisplay = 'icons',
+  planetDisplay = 'initials',
+  bgFrom = FILL_LIGHT,
+  bgTo = FILL,
+  showIcons = false,
 }: RasiChartProps) {
+  const gradId = useId().replace(/:/g, '');
   const houseData = useMemo(() => {
     if (externalHouseData) return externalHouseData;
     const houses: { houseNumber: number; planets: PlanetData[] }[] = [];
@@ -169,7 +176,7 @@ export default function RasiChart({
           width: '100%',
           // maxWidth: `${size}px`,
           height: 'auto',
-          background: `linear-gradient(135deg, ${FILL_LIGHT} 0%, ${FILL} 100%)`,
+          background: `linear-gradient(135deg, ${bgFrom} 0%, ${bgTo} 100%)`,
           border: hairlineBorder
             ? `1px solid ${STROKE}`
             : `3px double ${STROKE}`,
@@ -180,17 +187,17 @@ export default function RasiChart({
         aria-label="North Indian rasi chart"
       >
         <defs>
-          <radialGradient id="paperGrad" cx="50%" cy="50%" r="70%">
-            <stop offset="0%" stopColor={FILL_LIGHT} />
-            <stop offset="70%" stopColor={FILL} />
-            <stop offset="100%" stopColor={FILL} />
+          <radialGradient id={gradId} cx="50%" cy="50%" r="70%">
+            <stop offset="0%" stopColor={bgFrom} />
+            <stop offset="70%" stopColor={bgTo} />
+            <stop offset="100%" stopColor={bgTo} />
           </radialGradient>
           <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
             <polygon points="0 0, 10 3.5, 0 7" fill={ACCENT} />
           </marker>
         </defs>
 
-        <rect x="0" y="0" width="300" height="300" fill="url(#paperGrad)" />
+        <rect x="0" y="0" width="300" height="300" fill={`url(#${gradId})`} />
 
         {/* Chart structure lines - 300x300 coordinates */}
         <g stroke={STROKE} strokeWidth="2" fill="none" strokeLinecap="round">
@@ -253,6 +260,7 @@ export default function RasiChart({
           const rashiNameY = rashiY + (isTri ? 12 : 15);
           const planetsBaseY = rashiNameY + (isTri ? 10 : 14);
           const isAsc = house.houseNumber === 1;
+          const signNumX = showIcons ? center.x + iconSize / 2 + 2 : center.x;
 
           return (
             <>
@@ -270,7 +278,7 @@ export default function RasiChart({
 
               <g key={`content-${house.houseNumber}`} style={{ pointerEvents: 'none' }}>
               {/* Sign icon */}
-              {house.signSymbol && (
+              {showIcons && house.signSymbol && (
                 <image
                   href={house.signSymbol}
                   x={center.x - iconSize / 2 - 2}
@@ -280,7 +288,7 @@ export default function RasiChart({
                 />
               )}
               <text
-                x={center.x + iconSize / 2 + 2}
+                x={signNumX}
                 y={rashiY}
                 textAnchor="middle"
                 dominantBaseline="middle"

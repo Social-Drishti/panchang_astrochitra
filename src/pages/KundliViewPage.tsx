@@ -4,7 +4,6 @@ import { useApp } from '../context/AppContext';
 import { useI18n } from '../i18n';
 import { loadDraft, loadSavedKundlis, saveKundli, clearDraft, type SavedKundliInput } from '../lib/kundliStorage';
 import { KUNDLI_NEW, KUNDLI_SAVED } from '../lib/navigation';
-import KundliTabs from '../components/KundliTabs';
 import KundliView from '../components/KundliView';
 import { MdArrowBack } from 'react-icons/md';
 
@@ -49,8 +48,6 @@ export default function KundliViewPage() {
 
   return (
     <div className="scroll-area" style={{ padding: '16px' }}>
-      <KundliTabs active={fromDraft ? 'new' : 'saved'} />
-
       <button
         onClick={handleBack}
         style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--olive)', fontSize: '14px', fontWeight: 600, marginBottom: '8px' }}

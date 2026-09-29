@@ -1361,3 +1361,131 @@ input::placeholder {
   font-size: 13px;
   color: var(--text-secondary);
 }
+
+/* ============================================================
+   KUNDLI VIEW — readable definition grid + graha grid
+   ============================================================ */
+
+.kv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.kv-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 10px 12px;
+  background: #fbf7f0;
+  border: 1px solid var(--card-line);
+  border-radius: 14px;
+}
+
+.kv-item.wide {
+  grid-column: 1 / -1;
+}
+
+.kv-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--card-gold);
+}
+
+.kv-value {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--card-text);
+  overflow-wrap: anywhere;
+}
+
+.kv-sub {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--text-secondary);
+}
+
+/* Planets in a two-column grid so the whole chart is visible at once */
+.graha-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.graha-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: #fbf7f0;
+  border: 1px solid var(--card-line);
+  border-radius: 14px;
+  min-width: 0;
+}
+
+.graha-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.graha-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.graha-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--card-text);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.graha-retro {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #eed3ce;
+  color: #6d3b34;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.graha-line {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.graha-l {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.graha-v {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--card-text);
+  overflow-wrap: anywhere;
+}

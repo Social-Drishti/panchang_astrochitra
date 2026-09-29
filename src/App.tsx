@@ -5,7 +5,7 @@ import { useI18n, type Lang } from './i18n';
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { MdMenu, MdLanguage, MdMyLocation, MdLocationOn, MdPersonOutline } from 'react-icons/md';
 import { locations } from './lib/locations';
-import { PAGE_ICONS, BOTTOM_NAV, groupForPage, pageFromPath, PAGE_PATHS, type Page } from './lib/navigation';
+import { PAGE_ICONS, BOTTOM_NAV, groupForPage, pageFromPath, PAGE_PATHS, KUNDLI_VIEW_BASE, type Page } from './lib/navigation';
 import { readLastPath, writeLastPath } from './lib/lastPage';
 
 import HomePage from './pages/HomePage';
@@ -192,7 +192,7 @@ function AppShell() {
       {page !== 'kundli' && page !== 'home' && page !== 'account' && <LocationBar />}
 
       <main className="main-content">
-        {page !== 'home' && topMenu}
+        {page !== 'home' && !routerLocation.pathname.startsWith(KUNDLI_VIEW_BASE) && topMenu}
 
         <AnimatePresence mode="wait" initial={false}>
           <motion.div

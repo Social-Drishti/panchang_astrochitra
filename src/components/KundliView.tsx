@@ -17,6 +17,8 @@ const PLANET_SANS: Record<string, string> = {
   Jupiter: 'Guru', Venus: 'Shukra', Saturn: 'Shani', Rahu: 'Rahu', Ketu: 'Ketu',
 };
 
+const PLANET_ORDER = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu', 'Ascendant'];
+
 function formatDegMin(deg: number): string {
   const d = Math.floor(deg);
   const m = Math.floor((deg - d) * 60);
@@ -44,7 +46,47 @@ export function Row({ label, value, sub, valueColor }: { label: string; value: s
   );
 }
 
-function PlanetBadge({ p, showNakshatra = false }: { p: PlanetInfo; showNakshatra?: boolean }) {
+function KvItem({ label, value, sub, wide }: { label: string; value: string; sub?: string; wide?: boolean }) {
+  return (
+    <div className={`kv-item${wide ? ' wide' : ''}`}>
+      <div className="kv-label">{label}</div>
+      <div className="kv-value">{value}</div>
+      {sub && <div className="kv-sub">{sub}</div>}
+    </div>
+  );
+}
+
+function PlanetTile({ p }: { p: PlanetInfo }) {
+  const { lang } = useApp();
+  const { tr } = useI18n(lang);
+  return (
+    <div className="graha-tile">
+      <div className="graha-head">
+        <span className="graha-dot" style={{ background: PLANET_COLORS[p.key] || '#999' }} />
+        <span className="graha-name">{PLANET_SANS[p.key] || p.key}</span>
+        {p.isRetro && <span className="graha-retro">R</span>}
+      </div>
+      <div className="graha-line">
+        <span className="graha-l">{tr('rashi')}</span>
+        <span className="graha-v">{p.signName}{RASHI_NAME[p.signName] ? ` · ${RASHI_NAME[p.signName]}` : ''}</span>
+      </div>
+      <div className="graha-line">
+        <span className="graha-l">{tr('degree')}</span>
+        <span className="graha-v">{formatDegMin(p.normDegree)}</span>
+      </div>
+      <div className="graha-line">
+        <span className="graha-l">{tr('nakshatra')}</span>
+        <span className="graha-v">{p.nakshatraName}</span>
+      </div>
+      <div className="graha-line">
+        <span className="graha-l">{tr('pada')}</span>
+        <span className="graha-v">{p.nakshatraLord} · {p.nakshatraPada}</span>
+      </div>
+    </div>
+  );
+}
+
+function PlanetBadge({ p, showNakshatra = false, showRashi = false }: { p: PlanetInfo; showNakshatra?: boolean; showRashi?: boolean }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', padding: '8px 0', borderBottom: '1px solid var(--card-line)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
@@ -58,7 +100,7 @@ function PlanetBadge({ p, showNakshatra = false }: { p: PlanetInfo; showNakshatr
         </div>
       </div>
       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-        <div style={{ fontSize: '13px', fontWeight: 600 }}>{p.signName} · H{p.houseNumber}</div>
+        <div style={{ fontSize: '13px', fontWeight: 600 }}>{p.signName}{showRashi ? ` · ${RASHI_NAME[p.signName] || ''}` : ''} · H{p.houseNumber}</div>
         <div style={{ fontSize: '11px', color: 'var(--card-text-2)' }}>{formatDegMin(p.normDegree)}{p.isRetro ? ' (R)' : ''}</div>
       </div>
       {showNakshatra && (
@@ -112,6 +154,30 @@ export default function KundliView({ kundli, saved, onSave, onBack }: KundliView
     return nakshatraAtLongitude((selectedHouse.signNumber - 1) * 30);
   }, [selectedHouse]);
 
+  const sortedPlanets = useMemo(() => {
+    const byPos: Record<string, number> = {};
+    PLANET_ORDER.forEach((k, i) => (byPos[k] = i));
+    return [...kundli.planets].sort((a, b) => (byPos[a.key] ?? 99) - (byPos[b.key] ?? 99));
+  }, [kundli]);
+
+  const navamsaHouseData = useMemo(() => {
+    const planets = kundli.planets;
+    const asc = planets.find(p => p.key === 'Ascendant');
+    if (!asc) return { houses: null, ascSign: 1 };
+    const navamsaAscSign = Math.floor(asc.longitude / (30 / 9)) % 12 + 1;
+    const houses: { houseNumber: number; planets: { key: string; houseNumber: number; isRetro: boolean }[] }[] = [];
+    for (let i = 1; i <= 12; i++) houses.push({ houseNumber: i, planets: [] });
+    houses[0]!.planets.push({ key: 'Ascendant', houseNumber: 1, isRetro: false });
+    planets.forEach(p => {
+      if (p.key === 'Ascendant') return;
+      const navSign = Math.floor(p.longitude / (30 / 9)) % 12 + 1;
+      const hNum = ((navSign - navamsaAscSign + 12) % 12) + 1;
+      const h = houses.find(hh => hh.houseNumber === hNum);
+      if (h) h.planets.push({ key: p.key, houseNumber: hNum, isRetro: p.isRetro });
+    });
+    return { houses, ascSign: navamsaAscSign };
+  }, [kundli.planets]);
+
   return (
     <>
       {onBack && (
@@ -124,20 +190,22 @@ export default function KundliView({ kundli, saved, onSave, onBack }: KundliView
       )}
 
       <DisplayCard title={tr('janmaKundli')}>
-        <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--card-gold)' }}>{kundli.personName}</div>
-        <Row label={tr('birthLocal')} value={kundli.localDateTime} />
-        <Row label={tr('birthUtc')} value={kundli.utcDateTime} />
-        <Row label={tr('place')} value={kundli.placeName} />
-        <Row
-          label={tr('ascendant')}
-          value={`${kundli.ascendantSignName} (${kundli.ascendantRashiName})`}
-          sub={`${kundli.lagna.nakshatraName} · ${kundli.lagna.nakshatraLord} · pada ${kundli.lagna.pada}`}
-        />
-        <Row
-          label={tr('moonSign')}
-          value={`${kundli.moonSignName} (${RASHI_NAME[kundli.moonSignName] || ''})`}
-          sub={kundli.moonNakshatra}
-        />
+        <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--card-gold)', marginBottom: '12px' }}>{kundli.personName}</div>
+        <div className="kv-grid">
+          <KvItem
+            label={tr('rashi')}
+            value={`${kundli.moonSignName}${RASHI_NAME[kundli.moonSignName] ? ` · ${RASHI_NAME[kundli.moonSignName]}` : ''}`}
+            sub={`${tr('moonSign')} · ${kundli.moonNakshatra}`}
+          />
+          <KvItem
+            label={tr('lagna')}
+            value={`${kundli.ascendantSignName}${kundli.ascendantRashiName ? ` · ${kundli.ascendantRashiName}` : ''} · ${formatDegMin(kundli.lagna.longitude % 30)}`}
+            sub={`${kundli.lagna.nakshatraName} · ${kundli.lagna.nakshatraLord} · ${tr('pada')} ${kundli.lagna.pada}`}
+          />
+          <KvItem label={tr('birthLocal')} value={kundli.localDateTime} />
+          <KvItem label={tr('birthUtc')} value={kundli.utcDateTime} />
+          <KvItem label={tr('place')} value={kundli.placeName} wide />
+        </div>
       </DisplayCard>
 
       {onSave && (
@@ -159,6 +227,7 @@ export default function KundliView({ kundli, saved, onSave, onBack }: KundliView
         hairlineBorder
         size={420}
         planetDisplay="initials"
+        showIcons={false}
       />
 
       {selectedHouse && (
@@ -204,6 +273,31 @@ export default function KundliView({ kundli, saved, onSave, onBack }: KundliView
           )}
         </DisplayCard>
       )}
+
+      {navamsaHouseData.houses && (
+        <>
+          <div className="card-title" style={{ marginBottom: '8px', marginTop: '12px' }}>{tr('navamsaChart')}</div>
+          <RasiChart
+            houseData={navamsaHouseData.houses}
+            ascendantSign={navamsaHouseData.ascSign}
+            strokeOnText={false}
+            hairlineBorder
+            size={420}
+            planetDisplay="initials"
+            bgFrom="#fbe9e4"
+            bgTo="#fff8f4"
+            showIcons={false}
+          />
+        </>
+      )}
+
+      <DisplayCard title={tr('grahaPositions')}>
+        <div className="graha-grid">
+          {sortedPlanets.map(p => (
+            <PlanetTile key={p.key} p={p} />
+          ))}
+        </div>
+      </DisplayCard>
 
       <DisplayCard title={tr('vimshottari')}>
         <Row label={tr('birthNakshatra')} value={kundli.dasha.birthNakshatra} />
