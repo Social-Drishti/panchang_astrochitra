@@ -120,5 +120,55 @@ final class Database
             )
             SQL);
         $pdo->exec('CREATE INDEX IF NOT EXISTS idx_auth_tokens_user ON auth_tokens (user_id)');
+
+        // One row per PWA installation that has registered for a consultation.
+        // device_id is the anonymous install identity from src/lib/backend.ts;
+        // phone is unique so a single number can only ever be bound to one
+        // install, which is what makes "one PWA shows one client's data" hold.
+        $pdo->exec(<<<'SQL'
+            CREATE TABLE IF NOT EXISTS consultation_clients (
+                id               INTEGER PRIMARY KEY AUTOINCREMENT,
+                device_id        TEXT    NOT NULL UNIQUE,
+                phone            TEXT    NOT NULL,
+                name             TEXT    NOT NULL DEFAULT '',
+                email            TEXT    NOT NULL DEFAULT '',
+                date_of_birth    TEXT    NOT NULL DEFAULT '',
+                birth_time       TEXT    NOT NULL DEFAULT '',
+                birth_place      TEXT    NOT NULL DEFAULT '',
+                question         TEXT    NOT NULL DEFAULT '',
+                astro_client_id  INTEGER,
+                status           TEXT    NOT NULL DEFAULT 'pending',
+                lead_response    TEXT    NOT NULL DEFAULT '',
+                last_error       TEXT    NOT NULL DEFAULT '',
+                last_synced_at   TEXT,
+                created_at       TEXT    NOT NULL DEFAULT (datetime('now')),
+                updated_at       TEXT    NOT NULL DEFAULT (datetime('now'))
+            )
+            SQL);
+        $pdo->exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_consultation_clients_phone ON consultation_clients (phone)');
+        $pdo->exec('CREATE INDEX IF NOT EXISTS idx_consultation_clients_astro ON consultation_clients (astro_client_id)');
+
+        // Mirror of a client's appointments as returned by the Astrochitra Slots
+        // API. Cached so the PWA can render history without spending a call
+        // against the upstream per-hour rate limit on every page view.
+        $pdo->exec(<<<'SQL'
+            CREATE TABLE IF NOT EXISTS consultation_cache (
+                id                    INTEGER PRIMARY KEY AUTOINCREMENT,
+                consultation_client_id INTEGER NOT NULL REFERENCES consultation_clients(id) ON DELETE CASCADE,
+                astro_client_id       INTEGER NOT NULL,
+                kind                  TEXT    NOT NULL,
+                astro_appointment_id  INTEGER NOT NULL,
+                appt_date             TEXT    NOT NULL,
+                appt_time             TEXT    NOT NULL DEFAULT '',
+                duration              TEXT    NOT NULL DEFAULT '',
+                token_number          INTEGER,
+                status                TEXT    NOT NULL DEFAULT '',
+                google_meet_link      TEXT    NOT NULL DEFAULT '',
+                feedback_link         TEXT    NOT NULL DEFAULT '',
+                synced_at             TEXT    NOT NULL DEFAULT (datetime('now')),
+                UNIQUE (astro_client_id, kind, astro_appointment_id)
+            )
+            SQL);
+        $pdo->exec('CREATE INDEX IF NOT EXISTS idx_consultation_cache_client ON consultation_cache (consultation_client_id, appt_date)');
     }
 }

@@ -84,6 +84,7 @@ a.btn { display: inline-block; background: var(--accent); color: #fff; padding: 
     <a href="/admin" class="<?= ($pageTitle ?? '') === 'Overview' ? 'active' : '' ?>">Overview</a>
     <a href="/admin/clients" class="<?= ($pageTitle ?? '') === 'Clients' ? 'active' : '' ?>">Clients</a>
     <a href="/admin/kundlis" class="<?= ($pageTitle ?? '') === 'Kundlis' ? 'active' : '' ?>">Kundlis</a>
+    <a href="/admin/consultations" class="<?= ($pageTitle ?? '') === 'Consultations' ? 'active' : '' ?>">Consultations</a>
     <?php if (is_admin_role()): ?>
     <a href="/admin/users" class="<?= ($pageTitle ?? '') === 'Users' ? 'active' : '' ?>">Users</a>
     <a href="/admin/api-keys" class="<?= ($pageTitle ?? '') === 'API Keys' ? 'active' : '' ?>">API Keys</a>

@@ -5,7 +5,6 @@ import './styles/global.css';
 import { setGeminiApiKey, setDeepSeekApiKey, setExplabsApiKey } from './lib/astro/astroModelProvider';
 import { reportClient, watchInstall } from './lib/backend';
 
-console.log('PROBE_GEMINI', import.meta.env.VITE_GEMINI_API_KEY, 'PROBE_EXPLABS', import.meta.env.VITE_EXPLABS_API_KEY);
 const viteGeminiKey = import.meta.env.VITE_GEMINI_API_KEY;
 if (viteGeminiKey) setGeminiApiKey(viteGeminiKey);
 

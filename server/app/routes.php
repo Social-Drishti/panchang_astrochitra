@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Controllers\AdminConsultationController;
 use App\Controllers\ApiDataController;
 use App\Controllers\ApiKeyController;
 use App\Controllers\AppAuthController;
 use App\Controllers\AuthController;
 use App\Controllers\ClientController;
 use App\Controllers\ConfigController;
+use App\Controllers\ConsultationController;
 use App\Controllers\DashboardController;
 use App\Controllers\DataController;
 use App\Controllers\HealthController;
@@ -21,6 +23,13 @@ $router->get('/api/v1/health', [HealthController::class, 'index']);
 $router->get('/api/v1/config', [ConfigController::class, 'index']);
 $router->post('/api/v1/client', [ClientController::class, 'heartbeat']);
 $router->post('/api/v1/kundli', [KundliController::class, 'save']);
+
+// Consultation leads and the install's own consultation history. Public, like
+// the heartbeat above: the PWA is anonymous and identifies itself with the
+// install id, and every response is scoped to the row bound to that id.
+$router->post('/api/v1/consultation/register', [ConsultationController::class, 'register']);
+$router->get('/api/v1/consultation/profile', [ConsultationController::class, 'profile']);
+$router->get('/api/v1/consultation/sync', [ConsultationController::class, 'sync']);
 
 // App account auth (register/login are public; me/logout require a bearer token)
 $router->post('/api/v1/auth/register', [AppAuthController::class, 'register']);
@@ -44,6 +53,11 @@ $router->get('/admin/logout', [AuthController::class, 'logout']);
 $router->get('/admin', [DashboardController::class, 'index'], ['middleware' => 'auth']);
 $router->get('/admin/clients', [DashboardController::class, 'clients'], ['middleware' => 'auth']);
 $router->get('/admin/kundlis', [DashboardController::class, 'kundlis'], ['middleware' => 'auth']);
+
+// Admin dashboard — consultation leads (admin role required for mutations)
+$router->get('/admin/consultations', [AdminConsultationController::class, 'index'], ['middleware' => 'auth']);
+$router->post('/admin/consultations/release', [AdminConsultationController::class, 'release'], ['middleware' => 'auth']);
+$router->post('/admin/consultations/resync', [AdminConsultationController::class, 'resync'], ['middleware' => 'auth']);
 
 // Admin dashboard — data clearing (admin role required for mutations)
 $router->post('/admin/data/clear-all', [DataController::class, 'clearAll'], ['middleware' => 'auth']);
